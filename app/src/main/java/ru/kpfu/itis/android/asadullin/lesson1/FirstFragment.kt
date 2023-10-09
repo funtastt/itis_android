@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import ru.kpfu.itis.android.asadullin.lesson1.databinding.FragmentFirstBinding
 
@@ -45,6 +46,16 @@ class FirstFragment : Fragment() {
                     .replace(R.id.fragment_container, ThirdFragment.newInstance(etInput.text.toString()), ThirdFragment.THIRD_FRAGMENT_TAG)
                     .addToBackStack(null)
                     .commit()
+            }
+
+            btnSave.setOnClickListener {
+                val text = etInput.text.toString()
+                if (text.isNotEmpty()) {
+                    (activity as MainActivity).passData(text)
+                    etInput.text.clear()
+                } else {
+                    Toast.makeText(context, "Text input must be non-empty!", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
