@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    namespace 'ru.kpfu.itis.android.asadullin.lesson1'
-    compileSdk 33
+    namespace 'ru.kpfu.itis.android.asadullin'
+    compileSdk 34
 
     defaultConfig {
-        applicationId "ru.kpfu.itis.android.asadullin.lesson1"
+        applicationId "ru.kpfu.itis.android.asadullin"
         minSdk 24
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -29,6 +29,9 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+    viewBinding {
+        enabled = true
     }
 }
 

@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">lesson1</string>
+    <string name="enter_phone_number">Enter phone number</string>
+    <string name="phone_number_input_field">Phone number input field</string>
+    <string name="next">Next</string>
+    <string name="next_button">Next Button</string>
+    <string name="enter_question_count">Enter question count</string>
 </resources>
