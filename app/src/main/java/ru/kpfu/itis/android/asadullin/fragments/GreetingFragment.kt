@@ -6,7 +6,6 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import ru.kpfu.itis.android.asadullin.MainActivity
@@ -36,19 +35,40 @@ class GreetingFragment : Fragment() {
     private fun initViews() {
         with(viewBinding) {
             etPhone.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 }
 
                 override fun afterTextChanged(s: Editable?) {
+                    var phoneNumber =
+                        if (!s.toString().startsWith("8") && !s.toString().startsWith("+7")) {
+                            "8$" + s.toString()
+                        } else {
+                            s.toString()
+                        }
+                    val formattedPhoneNumber = formatPhoneNumber(phoneNumber)
+                    etPhone.removeTextChangedListener(this)
+                    etPhone.setText(formattedPhoneNumber)
+                    etPhone.setSelection(formattedPhoneNumber.length)
+                    etPhone.addTextChangedListener(this)
                     validateFields()
                 }
             })
 
             etQuestionCount.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -62,13 +82,38 @@ class GreetingFragment : Fragment() {
             btnNext.setOnClickListener {
                 val questionCount = etQuestionCount.text.toString().toInt()
 
-                btnNext.setOnClickListener {
-                    (activity as MainActivity).replaceFragment(
-                        QuizFragment.newInstance(questionCount), QuizFragment.QUIZ_FRAGMENT_TAG, true
-                    )
-                }
+                (activity as MainActivity).replaceFragment(
+                    QuizFragment.newInstance(questionCount), QuizFragment.QUIZ_FRAGMENT_TAG, true
+                )
             }
         }
+    }
+
+    private fun formatPhoneNumber(phoneNumber: String): String {
+        var formattedPhone = phoneNumber.filter { it.isDigit() }
+
+        if (formattedPhone.isNotEmpty()) {
+            formattedPhone = "+7" + formattedPhone.substring(1)
+        }
+
+        if (formattedPhone.length >= 3) {
+            formattedPhone = formattedPhone.substring(0, 2) + "(" + formattedPhone.substring(2)
+        }
+
+        if (formattedPhone.length >= 7) {
+            formattedPhone = formattedPhone.substring(0, 6) + ")" + formattedPhone.substring(6)
+        }
+
+        if (formattedPhone.length >= 11) {
+            formattedPhone = formattedPhone.substring(0, 10) + "-" + formattedPhone.substring(10)
+        }
+
+        if (formattedPhone.length >= 14 && !formattedPhone.endsWith("-")) {
+            formattedPhone = formattedPhone.substring(0, 13) + "-" + formattedPhone.substring(13)
+        }
+
+        return formattedPhone
+
     }
 
     private fun validateFields() {
@@ -81,7 +126,8 @@ class GreetingFragment : Fragment() {
     }
 
     private fun validateQuestionCount(questionCountText: String): Boolean {
-        val ans = questionCountText.isNotEmpty() && (minQuestionCount <= questionCountText.toInt()) && (questionCountText.toInt() <= maxQuestionCount)
+        val ans =
+            questionCountText.isNotEmpty() && (minQuestionCount <= questionCountText.toInt()) && (questionCountText.toInt() <= maxQuestionCount)
         if (!ans) {
             showSnackBar("Invalid question count...")
         }
@@ -89,7 +135,7 @@ class GreetingFragment : Fragment() {
     }
 
     private fun validatePhoneNumber(phoneNumber: String): Boolean {
-        val regex = """^(?:\+79\d{8}|89\d{9})$""".toRegex()
+        val regex = """^\+\d{1,2}\(\d{3}\)\d{3}-\d{2}-\d{2}$""".toRegex()
         val ans = regex.matches(phoneNumber)
 
         if (!ans) {
