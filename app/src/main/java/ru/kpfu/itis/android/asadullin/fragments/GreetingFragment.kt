@@ -6,7 +6,6 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import ru.kpfu.itis.android.asadullin.MainActivity
@@ -43,6 +42,16 @@ class GreetingFragment : Fragment() {
                 }
 
                 override fun afterTextChanged(s: Editable?) {
+                    var phoneNumber = if (!s.toString().startsWith("8") && !s.toString().startsWith("+7")) {
+                        "8$"+ s.toString()
+                    } else {
+                        s.toString()
+                    }
+                    val formattedPhoneNumber = formatPhoneNumber(phoneNumber)
+                    etPhone.removeTextChangedListener(this)
+                    etPhone.setText(formattedPhoneNumber)
+                    etPhone.setSelection(formattedPhoneNumber.length)
+                    etPhone.addTextChangedListener(this)
                     validateFields()
                 }
             })
@@ -69,6 +78,33 @@ class GreetingFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun formatPhoneNumber(phoneNumber: String): String {
+        var formattedPhone = phoneNumber.filter { it.isDigit() }
+
+        if (formattedPhone.isNotEmpty()) {
+            formattedPhone = "+7" + formattedPhone.substring(1)
+        }
+
+        if (formattedPhone.length >= 3) {
+            formattedPhone = formattedPhone.substring(0, 2) + "(" + formattedPhone.substring(2)
+        }
+
+        if (formattedPhone.length >= 7) {
+            formattedPhone = formattedPhone.substring(0, 6) + ")" + formattedPhone.substring(6)
+        }
+
+        if (formattedPhone.length >= 11) {
+            formattedPhone = formattedPhone.substring(0, 10) + "-" + formattedPhone.substring(10)
+        }
+
+        if (formattedPhone.length >= 14 && !formattedPhone.endsWith("-")) {
+            formattedPhone = formattedPhone.substring(0, 13) + "-" + formattedPhone.substring(13)
+        }
+
+        return formattedPhone
+
     }
 
     private fun validateFields() {
