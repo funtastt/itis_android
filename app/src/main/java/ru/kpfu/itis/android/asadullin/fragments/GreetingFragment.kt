@@ -58,6 +58,12 @@ class GreetingFragment : Fragment() {
                     etPhone.setText(formattedPhoneNumber)
                     etPhone.setSelection(formattedPhoneNumber.length)
                     etPhone.addTextChangedListener(this)
+                    val isValid = validatePhoneNumber(etPhone.text.toString())
+
+                    if (!isValid) {
+                        etPhone.error = "Invalid phone number..."
+                    }
+
                     validateFields()
                 }
             })
@@ -75,6 +81,12 @@ class GreetingFragment : Fragment() {
                 }
 
                 override fun afterTextChanged(s: Editable?) {
+                    val isValid = validateQuestionCount(etQuestionCount.text.toString())
+
+                    if (!isValid) {
+                        etQuestionCount.error = "Too many questions..."
+                    }
+
                     validateFields()
                 }
             })
@@ -100,16 +112,16 @@ class GreetingFragment : Fragment() {
             formattedPhone = formattedPhone.substring(0, 2) + "(" + formattedPhone.substring(2)
         }
 
-        if (formattedPhone.length >= 7) {
-            formattedPhone = formattedPhone.substring(0, 6) + ")" + formattedPhone.substring(6)
+        if (formattedPhone.length >= 8) {
+            formattedPhone = formattedPhone.substring(0, 6) + ")-" + formattedPhone.substring(6)
         }
 
-        if (formattedPhone.length >= 11) {
-            formattedPhone = formattedPhone.substring(0, 10) + "-" + formattedPhone.substring(10)
+        if (formattedPhone.length >= 12) {
+            formattedPhone = formattedPhone.substring(0, 11) + "-" + formattedPhone.substring(11)
         }
 
-        if (formattedPhone.length >= 14 && !formattedPhone.endsWith("-")) {
-            formattedPhone = formattedPhone.substring(0, 13) + "-" + formattedPhone.substring(13)
+        if (formattedPhone.length >= 15 && !formattedPhone.endsWith("-")) {
+            formattedPhone = formattedPhone.substring(0, 14) + "-" + formattedPhone.substring(14)
         }
 
         return formattedPhone
@@ -125,27 +137,12 @@ class GreetingFragment : Fragment() {
     }
 
     private fun validateQuestionCount(questionCountText: String): Boolean {
-        val ans =
-            questionCountText.isNotEmpty() && (minQuestionCount <= questionCountText.toInt()) && (questionCountText.toInt() <= maxQuestionCount)
-        if (!ans) {
-            viewBinding.etQuestionCount.error = "Invalid question number"
-        }
-        return ans
+        return questionCountText.isNotEmpty() && (minQuestionCount <= questionCountText.toInt()) && (questionCountText.toInt() <= maxQuestionCount)
     }
 
     private fun validatePhoneNumber(phoneNumber: String): Boolean {
-        val regex = """^\+\d{1,2}\(\d{3}\)\d{3}-\d{2}-\d{2}$""".toRegex()
-        val ans = regex.matches(phoneNumber)
-
-        if (!ans) {
-            viewBinding.etPhone.error = "Invalid phone number"
-        }
-
-        return ans
-    }
-
-    private fun showSnackBar(message: String) {
-        view?.let { Snackbar.make(it, message, Snackbar.LENGTH_SHORT).show() }
+        val regex = """^\+\d{1,2}\(\d{3}\)-\d{3}-\d{2}-\d{2}$""".toRegex()
+        return regex.matches(phoneNumber)
     }
 
     override fun onDestroyView() {
