@@ -12,8 +12,7 @@ import ru.kpfu.itis.android.asadullin.util.ParamsKey
 
 class QuestionFragment : Fragment() {
     private var _viewBinding: FragmentQuestionBinding? = null
-    private val viewBinding: FragmentQuestionBinding
-        get() = _viewBinding!!
+    private val viewBinding: FragmentQuestionBinding get() = _viewBinding!!
 
     private var answerAdapter: AnswerAdapter? = null
 
@@ -38,25 +37,26 @@ class QuestionFragment : Fragment() {
             answerAdapter = AnswerAdapter(
                 answers = question.answersList.toMutableList(),
                 onItemChecked = { position ->
-                    updateChecked(position)
+                    updateAnswer(position)
                 },
                 onRootClicked = { position ->
-                    updateChecked(position)
+                    updateAnswer(position)
                 }
             )
             rvAnswers.adapter = answerAdapter
         }
     }
 
-    private fun updateChecked(position: Int) {
-        answerAdapter?.answers?.let {
-            it.forEach { answer ->
+    private fun updateAnswer(position: Int) {
+        answerAdapter?.apply {
+            answers.forEach { answer ->
                 answer.checked = false
             }
-            it[position].checked = true
-            answerAdapter?.notifyDataSetChanged()
 
-            var listener: AnswerChangedListener =
+            answers.getOrNull(position)?.checked = true
+            notifyDataSetChanged()
+
+            val listener: AnswerChangedListener =
                 requireActivity()
                     .supportFragmentManager
                     .findFragmentByTag(QuizFragment.QUIZ_FRAGMENT_TAG)

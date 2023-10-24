@@ -1,11 +1,13 @@
 package ru.kpfu.itis.android.asadullin.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.kpfu.itis.android.asadullin.adapters.holder.AnswerItem
 import ru.kpfu.itis.android.asadullin.databinding.ItemAnswerBinding
 import ru.kpfu.itis.android.asadullin.model.Answer
+
 
 class AnswerAdapter(
     val answers: List<Answer>,
@@ -16,7 +18,7 @@ class AnswerAdapter(
         return AnswerItem(
             ItemAnswerBinding.inflate(LayoutInflater.from(parent.context), parent, false),
             onItemChecked,
-            onRootClicked,
+            onRootClicked
         )
     }
 

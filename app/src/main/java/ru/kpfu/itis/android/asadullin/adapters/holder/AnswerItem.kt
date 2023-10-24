@@ -1,5 +1,7 @@
 package ru.kpfu.itis.android.asadullin.adapters.holder
 
+import android.util.Log
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import ru.kpfu.itis.android.asadullin.databinding.ItemAnswerBinding
 import ru.kpfu.itis.android.asadullin.model.Answer

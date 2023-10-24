@@ -35,8 +35,8 @@ class QuizFragment : Fragment(R.layout.fragment_quiz), AnswerChangedListener {
 
     private fun initViews() {
         with(viewBinding) {
-            val questionsNumber = requireArguments().getInt(ParamsKey.NUMBER_OF_QUESTIONS_KEY)
-            val questions = QuestionGenerator.generateQuestions(questionsNumber)
+            val questionsCount = requireArguments().getInt(ParamsKey.NUMBER_OF_QUESTIONS_KEY)
+            val questions = QuestionGenerator.generateQuestions(questionsCount)
             val vpQuestionsAdapter = QuizFragmentAdapter(questions, childFragmentManager, lifecycle)
 
             vpQuestions.apply {
@@ -45,11 +45,11 @@ class QuizFragment : Fragment(R.layout.fragment_quiz), AnswerChangedListener {
                 registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                     override fun onPageSelected(position: Int) {
                         val realPos = when (position) {
-                            0 -> questionsNumber
-                            questionsNumber + 1 -> 1
+                            0 -> questionsCount
+                            questionsCount + 1 -> 1
                             else -> position
                         }
-                        tvHeader.text = "Question number $realPos out of $questionsNumber"
+                        tvHeader.text = "Question number $realPos out of $questionsCount"
                     }
 
                     override fun onPageScrolled(
@@ -57,10 +57,10 @@ class QuizFragment : Fragment(R.layout.fragment_quiz), AnswerChangedListener {
                         positionOffset: Float,
                         positionOffsetPixels: Int
                     ) {
-                        if (position == questionsNumber + 1 && positionOffset == 0.0f) {
+                        if (position == questionsCount + 1 && positionOffset == 0.0f) {
                             setCurrentItem(1, false)
                         } else if (position == 0 && positionOffset == 0.0f) {
-                            setCurrentItem(questionsNumber, false)
+                            setCurrentItem(questionsCount, false)
                         }
                     }
                 })

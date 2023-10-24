@@ -16,7 +16,13 @@ class QuizFragmentAdapter(
     override fun getItemCount(): Int = questionsList.size + 2
 
     override fun createFragment(position: Int): Fragment {
-        val realPosition = if (position == 0) questionsList.size - 1 else (position - 1) % questionsList.size
+
+        // если я нахожусь в 0 (в самом начале), то перехожу в самый конец списка
+        val realPosition = when (position) {
+            0 -> questionsList.size - 1
+            questionsList.size + 1 -> 0
+            else -> position - 1
+        }
         return QuestionFragment.newInstance(realPosition, questionsList[realPosition])
     }
 }
