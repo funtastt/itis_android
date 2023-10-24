@@ -49,12 +49,15 @@ class QuestionFragment : Fragment() {
 
     private fun updateAnswer(position: Int) {
         answerAdapter?.apply {
-            answers.forEach { answer ->
-                answer.checked = false
+            val previouslySelectedPosition = answers.indexOfFirst { it.checked }
+
+            if (previouslySelectedPosition != -1) {
+                answers[previouslySelectedPosition].checked = false
+                notifyItemChanged(previouslySelectedPosition)
             }
 
-            answers.getOrNull(position)?.checked = true
-            notifyDataSetChanged()
+            answers[position].checked = true
+            notifyItemChanged(position)
 
             val listener: AnswerChangedListener =
                 requireActivity()

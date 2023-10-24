@@ -121,7 +121,6 @@ class GreetingFragment : Fragment() {
         val questionCountText = viewBinding.etQuestionCount.text.toString()
         val isValidPhoneNumber = validatePhoneNumber(phoneNumber)
         val isValidQuestionCount = validateQuestionCount(questionCountText)
-
         viewBinding.btnNext.isEnabled = isValidPhoneNumber && isValidQuestionCount
     }
 
@@ -129,7 +128,7 @@ class GreetingFragment : Fragment() {
         val ans =
             questionCountText.isNotEmpty() && (minQuestionCount <= questionCountText.toInt()) && (questionCountText.toInt() <= maxQuestionCount)
         if (!ans) {
-            showSnackBar("Invalid question count...")
+            viewBinding.etQuestionCount.error = "Invalid question number"
         }
         return ans
     }
@@ -139,7 +138,7 @@ class GreetingFragment : Fragment() {
         val ans = regex.matches(phoneNumber)
 
         if (!ans) {
-            showSnackBar("Invalid phone number...")
+            viewBinding.etPhone.error = "Invalid phone number"
         }
 
         return ans
