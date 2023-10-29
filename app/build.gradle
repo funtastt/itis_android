@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    namespace 'ru.kpfu.itis.android.asadullin.lesson1'
-    compileSdk 33
+    namespace 'ru.kpfu.itis.android.asadullin'
+    compileSdk 34
 
     defaultConfig {
-        applicationId "ru.kpfu.itis.android.asadullin.lesson1"
+        applicationId "ru.kpfu.itis.android.asadullin"
         minSdk 24
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -30,12 +30,16 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    viewBinding {
+        enabled = true
+    }
 }
 
 dependencies {
-
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation("com.github.kirich1409:viewbindingpropertydelegate-noreflection:1.5.9")
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
     implementation 'com.google.android.material:material:1.10.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     testImplementation 'junit:junit:4.13.2'

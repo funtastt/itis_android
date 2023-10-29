@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">lesson1</string>
+    <string name="app_name">Kittens Facts</string>
+    <string name="enter_kittens_count">Enter kittens count</string>
+    <string name="show_kittens">Show kittens</string>
+    <string name="enter_a_number_1_5">Enter a number (1–5)</string>
+    <string name="add_kittens">Add kittens</string>
+    <string name="show_bottom_sheet_dialog">Show bottom sheet dialog</string>
+    <string name="there_is_nothing_to_show">There is nothing to show…</string>
 </resources>
