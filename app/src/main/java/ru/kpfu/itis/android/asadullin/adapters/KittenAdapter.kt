@@ -44,7 +44,7 @@ class KittensAdapter(
             glide = glide,
             onKittenClicked = onKittenClicked,
             onBookmarkClicked = onBookmarkClicked,
-            enableDeleteButton = kittensList.size > 12
+            enableDeleteButton = kittensList.size > 15
         )
 
         R.layout.item_kittens_date -> DateItem(
@@ -72,7 +72,7 @@ class KittensAdapter(
         when (holder) {
             is KittenItem -> {
                 holder.onBind(kittensList[position] as KittenModel.KittenData)
-                if (kittensList.size > 12) {
+                if (kittensList.size > 15) {
                     holder.setOnDeleteClickListener(this)
                 }
             }
