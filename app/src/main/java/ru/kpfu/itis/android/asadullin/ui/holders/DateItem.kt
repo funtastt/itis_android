@@ -4,13 +4,14 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.kpfu.itis.android.asadullin.databinding.ItemKittensDateBinding
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 class DateItem(
     private val viewBinding: ItemKittensDateBinding,
 ) : RecyclerView.ViewHolder(viewBinding.root) {
     fun onBind(date : Date) {
         with(viewBinding) {
-            tvKittensDate.text = SimpleDateFormat("dd/MM/yyyy").format(date)
+            tvKittensDate.text = SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).format(date)
         }
     }
 }

@@ -8,14 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import ru.kpfu.itis.android.asadullin.MainActivity
+import ru.kpfu.itis.android.asadullin.R
 import ru.kpfu.itis.android.asadullin.databinding.FragmentGreetingBinding
-import ru.kpfu.itis.android.asadullin.util.KittenFactsRepository
+import ru.kpfu.itis.android.asadullin.util.KittenItemsRepository
 
 class GreetingFragment : Fragment() {
     private var _viewBinding: FragmentGreetingBinding? = null
     private val viewBinding: FragmentGreetingBinding get() = _viewBinding!!
 
-    private final val MAX_KITTENS_COUNT = 45
+    private val MAX_KITTENS_COUNT = 45
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,7 +50,7 @@ class GreetingFragment : Fragment() {
                     val isValid = validateKittensCount(etKittensCount.text.toString())
 
                     if (!isValid) {
-                        etKittensCount.error = "Too many news entered..."
+                        etKittensCount.error = context?.getString(R.string.too_many_kittens)
                         btnEnterKittensCount.isEnabled = false
                     } else {
                         btnEnterKittensCount.isEnabled = true
@@ -60,7 +61,7 @@ class GreetingFragment : Fragment() {
             btnEnterKittensCount.setOnClickListener {
                 val newsCount = etKittensCount.text.toString().toIntOrNull() ?: 0
 
-                KittenFactsRepository.clearCurrentList()
+                KittenItemsRepository.clearCurrentList()
 
                 (activity as MainActivity).replaceFragment(
                     KittensFragment.newInstance(newsCount), KittensFragment.KITTENS_FRAGMENT_TAG, true

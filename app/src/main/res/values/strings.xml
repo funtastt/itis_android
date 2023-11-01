@@ -7,4 +7,7 @@
     <string name="show_bottom_sheet_dialog">Show bottom sheet dialog</string>
     <string name="there_is_nothing_to_show">There is nothing to show…</string>
     <string name="kitten_image_transition">KittenImageTransition</string>
+    <string name="item_was_removed_successfully">Item was removed successfully</string>
+    <string name="undo">UNDO</string>
+    <string name="too_many_kittens">Too many kittens were entered...</string>
 </resources>

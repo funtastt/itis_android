@@ -9,7 +9,7 @@ import android.widget.EditText
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import ru.kpfu.itis.android.asadullin.R
 import ru.kpfu.itis.android.asadullin.adapters.KittensAdapter
-import ru.kpfu.itis.android.asadullin.util.KittenFactsRepository
+import ru.kpfu.itis.android.asadullin.util.KittenItemsRepository
 
 class BottomSheetDialogFragment(var adapter: KittensAdapter) : BottomSheetDialogFragment() {
     private var btnAddNews: Button? = null
@@ -30,7 +30,7 @@ class BottomSheetDialogFragment(var adapter: KittensAdapter) : BottomSheetDialog
         btnAddNews?.setOnClickListener {
             val number = etAddNewsCount?.text.toString().toIntOrNull() ?: 0
             if (number in 1..5) {
-                adapter.setItems(KittenFactsRepository.addRandomItems(number))
+                adapter.setItems(KittenItemsRepository.addRandomItems(number))
             }
             dismiss()
         }

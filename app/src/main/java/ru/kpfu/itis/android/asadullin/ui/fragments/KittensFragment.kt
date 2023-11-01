@@ -1,6 +1,5 @@
 package ru.kpfu.itis.android.asadullin.ui.fragments
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,14 +10,12 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.google.android.material.snackbar.Snackbar
 import ru.kpfu.itis.android.asadullin.MainActivity
-import ru.kpfu.itis.android.asadullin.R
 import ru.kpfu.itis.android.asadullin.adapters.KittensAdapter
 import ru.kpfu.itis.android.asadullin.databinding.FragmentKittensBinding
 import ru.kpfu.itis.android.asadullin.model.KittenModel
 import ru.kpfu.itis.android.asadullin.util.callback.SwipeToDeleteCallback
-import ru.kpfu.itis.android.asadullin.util.KittenFactsRepository
+import ru.kpfu.itis.android.asadullin.util.KittenItemsRepository
 import ru.kpfu.itis.android.asadullin.util.ParamsKey
 
 class KittensFragment : Fragment() {
@@ -26,8 +23,6 @@ class KittensFragment : Fragment() {
     private var rv : RecyclerView? = null
     private val viewBinding: FragmentKittensBinding get() = _viewBinding!!
     private var kittensAdapter: KittensAdapter? = null
-
-    private final val MAX_NEWS_FEED_COUNT = 45
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,7 +45,7 @@ class KittensFragment : Fragment() {
     private fun initRecyclerView(kittensCount : Int) {
         val columnCount = if (kittensCount <= 12) 1 else 2
 
-        val kittensList = KittenFactsRepository.getKittens(kittensCount)
+        val kittensList = KittenItemsRepository.getKittens(kittensCount)
         kittensAdapter = KittensAdapter(
             glide = Glide.with(this),
             fragmentManager = parentFragmentManager,
@@ -115,7 +110,7 @@ class KittensFragment : Fragment() {
     }
 
     private fun onBookmarkClicked(position: Int, kittenData: KittenModel.KittenData) {
-        KittenFactsRepository.toggleBookmark(kittenData.kittenId)
+        KittenItemsRepository.toggleBookmark(kittenData.kittenId)
         kittensAdapter?.updateItem(position, kittenData)
     }
 

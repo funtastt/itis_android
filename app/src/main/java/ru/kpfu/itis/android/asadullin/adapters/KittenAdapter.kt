@@ -19,7 +19,7 @@ import ru.kpfu.itis.android.asadullin.model.KittenModel
 import ru.kpfu.itis.android.asadullin.ui.holders.ButtonItem
 import ru.kpfu.itis.android.asadullin.ui.holders.DateItem
 import ru.kpfu.itis.android.asadullin.ui.holders.KittenItem
-import ru.kpfu.itis.android.asadullin.util.KittenFactsRepository
+import ru.kpfu.itis.android.asadullin.util.KittenItemsRepository
 import ru.kpfu.itis.android.asadullin.util.listeners.OnDeleteClickListener
 import java.util.Date
 
@@ -120,8 +120,8 @@ class KittensAdapter(
 
     fun removeItem(position: Int) {
         val item = kittensList[position]
-        val snackbar = Snackbar.make(root, "Item was removed successfully", Snackbar.LENGTH_LONG)
-        snackbar.setAction("UNDO") {
+        val snackbar = Snackbar.make(root, root.context.getString(R.string.item_was_removed_successfully), Snackbar.LENGTH_LONG)
+        snackbar.setAction(root.context.getString(R.string.undo)) {
             restoreItem(item, position)
         }
 
@@ -130,13 +130,13 @@ class KittensAdapter(
 
         kittensList.removeAt(position)
         notifyItemRemoved(position)
-        KittenFactsRepository.removeAt(position)
+        KittenItemsRepository.removeAt(position)
     }
 
     private fun restoreItem(item: KittenModel, position: Int) {
         kittensList.add(position, item)
         notifyItemInserted(position)
-        KittenFactsRepository.restoreItem(position, item)
+        KittenItemsRepository.restoreItem(position, item)
     }
 
     override fun onDeleteClick(position: Int) {

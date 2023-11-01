@@ -1,7 +1,6 @@
 package ru.kpfu.itis.android.asadullin.ui.fragments
 
 import android.os.Bundle
-import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +11,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import ru.kpfu.itis.android.asadullin.databinding.FragmentItemSingleKittenBinding
 import ru.kpfu.itis.android.asadullin.model.KittenModel
-import ru.kpfu.itis.android.asadullin.util.KittenFactsRepository
+import ru.kpfu.itis.android.asadullin.util.KittenItemsRepository
 import ru.kpfu.itis.android.asadullin.util.ParamsKey
 
 class SingleKittenFragment : Fragment() {
@@ -36,7 +35,7 @@ class SingleKittenFragment : Fragment() {
 
         val id = arguments?.getInt(ParamsKey.CURRENT_KITTEN_ID)
 
-        val currentKitten = KittenFactsRepository.getAllKittens().single { (it as? KittenModel.KittenData)?.kittenId == id } as KittenModel.KittenData
+        val currentKitten = KittenItemsRepository.getAllKittens().single { (it as? KittenModel.KittenData)?.kittenId == id } as KittenModel.KittenData
 
         with(viewBinding) {
             tvNewsTitle.text = currentKitten.kittenFactTitle
