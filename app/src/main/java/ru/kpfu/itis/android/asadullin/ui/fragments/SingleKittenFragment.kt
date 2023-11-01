@@ -27,6 +27,8 @@ class SingleKittenFragment : Fragment() {
     ): View {
         _viewBinding = FragmentItemSingleKittenBinding.inflate(inflater)
 
+
+
         return viewBinding.root
     }
 
@@ -34,6 +36,7 @@ class SingleKittenFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val id = arguments?.getInt(ParamsKey.CURRENT_KITTEN_ID)
+        val transitionName = arguments?.getString(ParamsKey.TRANSITION_NAME)
 
         val currentKitten = KittenItemsRepository.getAllKittens().single { (it as? KittenModel.KittenData)?.kittenId == id } as KittenModel.KittenData
 
@@ -44,6 +47,7 @@ class SingleKittenFragment : Fragment() {
                 .load(currentKitten.kittenImageURL)
                 .apply(options)
                 .into(ivKittenPicture)
+            ivKittenPicture.transitionName = transitionName
         }
     }
 
@@ -54,8 +58,8 @@ class SingleKittenFragment : Fragment() {
 
     companion object {
         const val CURRENT_KITTEN_FRAGMENT_TAG = "CURRENT_KITTEN_FRAGMENT_TAG"
-        fun newInstance(kittenId: Int) = SingleKittenFragment().apply {
-            arguments = bundleOf(ParamsKey.CURRENT_KITTEN_ID to kittenId)
+        fun newInstance(kittenId: Int, transitionName: String?) = SingleKittenFragment().apply {
+            arguments = bundleOf(ParamsKey.CURRENT_KITTEN_ID to kittenId, ParamsKey.TRANSITION_NAME to transitionName)
         }
     }
 }

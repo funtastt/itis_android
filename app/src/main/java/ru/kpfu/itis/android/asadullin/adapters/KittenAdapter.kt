@@ -1,6 +1,7 @@
 package ru.kpfu.itis.android.asadullin.adapters
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -8,8 +9,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.RequestManager
 import com.google.android.material.snackbar.Snackbar
+import ru.kpfu.itis.android.asadullin.MainActivity
 import ru.kpfu.itis.android.asadullin.R
 import ru.kpfu.itis.android.asadullin.adapters.diffutil.NewsDiffUtil
 import ru.kpfu.itis.android.asadullin.databinding.ItemKittensBsdBtnBinding
@@ -30,6 +33,7 @@ class KittensAdapter(
     private val onKittenClicked: ((KittenModel.KittenData) -> Unit),
     private val onBookmarkClicked: ((Int, KittenModel.KittenData) -> Unit),
     private val root : View,
+    private val activity : Activity
     ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), OnDeleteClickListener{
 
     var kittensList = mutableListOf<KittenModel>()
@@ -75,6 +79,12 @@ class KittensAdapter(
                 if (kittensList.size > 15) {
                     holder.setOnDeleteClickListener(this)
                 }
+                val ivKittenImage = holder.viewBinding.ivKittenImage
+                ivKittenImage.setOnClickListener {
+                    (activity as MainActivity).showDetail(ivKittenImage, (kittensList[position] as KittenModel.KittenData).kittenId)
+                }
+
+                ivKittenImage.transitionName = "kitten_$position"
             }
             is ButtonItem -> holder.onBind()
             is DateItem -> holder.onBind(Date())

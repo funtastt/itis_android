@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -14,9 +15,10 @@ import ru.kpfu.itis.android.asadullin.MainActivity
 import ru.kpfu.itis.android.asadullin.adapters.KittensAdapter
 import ru.kpfu.itis.android.asadullin.databinding.FragmentKittensBinding
 import ru.kpfu.itis.android.asadullin.model.KittenModel
-import ru.kpfu.itis.android.asadullin.util.callback.SwipeToDeleteCallback
 import ru.kpfu.itis.android.asadullin.util.KittenItemsRepository
 import ru.kpfu.itis.android.asadullin.util.ParamsKey
+import ru.kpfu.itis.android.asadullin.util.callback.SwipeToDeleteCallback
+
 
 class KittensFragment : Fragment() {
     private var _viewBinding: FragmentKittensBinding? = null
@@ -39,7 +41,15 @@ class KittensFragment : Fragment() {
 
         initRecyclerView(kittensCount)
         if (kittensCount <= 12) enableSwipeToDelete()
-        else enablePressToDelete()
+
+        postponeEnterTransition()
+        view.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+            override fun onPreDraw(): Boolean {
+                view.viewTreeObserver.removeOnPreDrawListener(this)
+                startPostponedEnterTransition()
+                return true
+            }
+        })
     }
 
     private fun initRecyclerView(kittensCount : Int) {
@@ -51,7 +61,8 @@ class KittensFragment : Fragment() {
             fragmentManager = parentFragmentManager,
             onKittenClicked = ::onKittenClicked,
             onBookmarkClicked = ::onBookmarkClicked,
-            root = requireView()
+            root = requireView(),
+            activity = requireActivity()
         )
 
         with(viewBinding) {
@@ -86,7 +97,7 @@ class KittensFragment : Fragment() {
 
     private fun onKittenClicked(kittenPressed: KittenModel.KittenData) {
         (requireActivity() as MainActivity).replaceFragment(
-            SingleKittenFragment.newInstance(kittenPressed.kittenId),
+            SingleKittenFragment.newInstance(kittenPressed.kittenId, "kitten_${kittenPressed.kittenId}"),
             SingleKittenFragment.CURRENT_KITTEN_FRAGMENT_TAG,
             true
         )
@@ -104,11 +115,6 @@ class KittensFragment : Fragment() {
         val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
         itemTouchHelper.attachToRecyclerView(rv)
     }
-
-    private fun enablePressToDelete() {
-
-    }
-
     private fun onBookmarkClicked(position: Int, kittenData: KittenModel.KittenData) {
         KittenItemsRepository.toggleBookmark(kittenData.kittenId)
         kittensAdapter?.updateItem(position, kittenData)

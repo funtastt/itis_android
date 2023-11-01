@@ -13,7 +13,7 @@ import ru.kpfu.itis.android.asadullin.util.listeners.OnDeleteClickListener
 
 
 class KittenItem(
-    private val viewBinding: ItemKittensCvBinding,
+    val viewBinding: ItemKittensCvBinding,
     private val glide: RequestManager,
     private val onKittenClicked: ((KittenModel.KittenData) -> Unit),
     private val onBookmarkClicked: ((Int, KittenModel.KittenData) -> Unit),
