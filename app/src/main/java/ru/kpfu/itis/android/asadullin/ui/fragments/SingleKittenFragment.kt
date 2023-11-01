@@ -1,6 +1,7 @@
 package ru.kpfu.itis.android.asadullin.ui.fragments
 
 import android.os.Bundle
+import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,13 +21,13 @@ class SingleKittenFragment : Fragment() {
     private val options: RequestOptions = RequestOptions().fitCenter().diskCacheStrategy(
         DiskCacheStrategy.ALL)
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _viewBinding = FragmentItemSingleKittenBinding.inflate(inflater)
+
         return viewBinding.root
     }
 

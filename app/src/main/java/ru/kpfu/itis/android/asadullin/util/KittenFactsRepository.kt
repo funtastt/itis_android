@@ -98,4 +98,12 @@ object KittenFactsRepository {
             i += 9
         }
     }
+
+    fun removeAt(position: Int) {
+        currentKittensSublist.removeAt(position)
+    }
+
+    fun restoreItem(position: Int, item: KittenModel) {
+        currentKittensSublist.add(position, item)
+    }
 }

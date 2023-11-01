@@ -1,12 +1,15 @@
 package ru.kpfu.itis.android.asadullin.adapters
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
+import com.google.android.material.snackbar.Snackbar
 import ru.kpfu.itis.android.asadullin.R
 import ru.kpfu.itis.android.asadullin.adapters.diffutil.NewsDiffUtil
 import ru.kpfu.itis.android.asadullin.databinding.ItemKittensBsdBtnBinding
@@ -16,17 +19,20 @@ import ru.kpfu.itis.android.asadullin.model.KittenModel
 import ru.kpfu.itis.android.asadullin.ui.holders.ButtonItem
 import ru.kpfu.itis.android.asadullin.ui.holders.DateItem
 import ru.kpfu.itis.android.asadullin.ui.holders.KittenItem
-import java.lang.RuntimeException
+import ru.kpfu.itis.android.asadullin.util.KittenFactsRepository
+import ru.kpfu.itis.android.asadullin.util.listeners.OnDeleteClickListener
 import java.util.Date
+
 
 class KittensAdapter(
     private val glide: RequestManager,
     private val fragmentManager: FragmentManager,
     private val onKittenClicked: ((KittenModel.KittenData) -> Unit),
     private val onBookmarkClicked: ((Int, KittenModel.KittenData) -> Unit),
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+    private val root : View,
+    ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), OnDeleteClickListener{
 
-    private var kittensList = mutableListOf<KittenModel>()
+    var kittensList = mutableListOf<KittenModel>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.item_kittens_cv -> KittenItem(
@@ -36,8 +42,9 @@ class KittensAdapter(
                 false
             ),
             glide = glide,
-            onNewsClicked = onKittenClicked,
-            onFavouredClicked = onBookmarkClicked,
+            onKittenClicked = onKittenClicked,
+            onBookmarkClicked = onBookmarkClicked,
+            enableDeleteButton = kittensList.size > 12
         )
 
         R.layout.item_kittens_date -> DateItem(
@@ -63,7 +70,12 @@ class KittensAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is KittenItem -> holder.onBind(kittensList[position] as KittenModel.KittenData)
+            is KittenItem -> {
+                holder.onBind(kittensList[position] as KittenModel.KittenData)
+                if (kittensList.size > 12) {
+                    holder.setOnDeleteClickListener(this)
+                }
+            }
             is ButtonItem -> holder.onBind()
             is DateItem -> holder.onBind(Date())
         }
@@ -104,5 +116,30 @@ class KittensAdapter(
     fun updateItem(position: Int, item: KittenModel.KittenData) {
         this.kittensList[position] = item
         notifyItemChanged(position, item.isFavoured)
+    }
+
+    fun removeItem(position: Int) {
+        val item = kittensList[position]
+        val snackbar = Snackbar.make(root, "Item was removed successfully", Snackbar.LENGTH_LONG)
+        snackbar.setAction("UNDO") {
+            restoreItem(item, position)
+        }
+
+        snackbar.setActionTextColor(Color.YELLOW)
+        snackbar.show()
+
+        kittensList.removeAt(position)
+        notifyItemRemoved(position)
+        KittenFactsRepository.removeAt(position)
+    }
+
+    private fun restoreItem(item: KittenModel, position: Int) {
+        kittensList.add(position, item)
+        notifyItemInserted(position)
+        KittenFactsRepository.restoreItem(position, item)
+    }
+
+    override fun onDeleteClick(position: Int) {
+        removeItem(position)
     }
 }

@@ -17,7 +17,7 @@
         android:text="@string/there_is_nothing_to_show"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_newsFeed"
+        android:id="@+id/rv_kittens"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
