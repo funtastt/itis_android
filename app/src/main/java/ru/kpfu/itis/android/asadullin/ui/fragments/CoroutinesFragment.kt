@@ -36,7 +36,7 @@ class CoroutinesFragment : Fragment(R.layout.fragment_coroutines) {
                     progress: Int,
                     fromUser: Boolean
                 ) {
-                    tvCoroutinesCount.text = "Coroutines count: $progress"
+                    tvCoroutinesCount.text = String.format(getString(R.string.coroutines_count_d), progress)
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) { }
@@ -44,12 +44,12 @@ class CoroutinesFragment : Fragment(R.layout.fragment_coroutines) {
                 override fun onStopTrackingTouch(seekBar: SeekBar?) { }
             })
 
-            tvCoroutinesCount.text = "Coroutines count: ${sbCoroutinesCount.progress}"
+            tvCoroutinesCount.text = String.format(getString(R.string.coroutines_count_d), sbCoroutinesCount.progress)
 
             btnExecute.setOnClickListener {
                 val async = cbAsync.isChecked
                 val stopOnBackground = cbStopOnBg.isChecked
-                (requireActivity() as MainActivity).startCoroutines(
+                (requireActivity() as MainActivity).startAllCoroutines(
                     sbCoroutinesCount.progress,
                     async,
                     stopOnBackground,

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import ru.kpfu.itis.android.asadullin.MainActivity
 import ru.kpfu.itis.android.asadullin.lesson1.R
 import ru.kpfu.itis.android.asadullin.lesson1.databinding.FragmentSendNotificationBinding
 import ru.kpfu.itis.android.asadullin.util.NotificationUtil
@@ -31,11 +32,16 @@ class SendNotificationFragment : Fragment(R.layout.fragment_send_notification) {
     private fun initViews() {
         with(viewBinding) {
             btnShowNotification.setOnClickListener {
-                NotificationUtil.sendNotification(
-                    requireContext(),
-                    etNotificationTitle.text.toString(),
-                    etNotificationContent.text.toString(),
-                )
+                val mainActivity = activity as MainActivity
+                if (!mainActivity.allowedToShowNotifications) {
+                    mainActivity.remindPermissionSettings()
+                } else {
+                    NotificationUtil.sendNotification(
+                        requireContext(),
+                        etNotificationTitle.text.toString(),
+                        etNotificationContent.text.toString(),
+                    )
+                }
             }
         }
     }

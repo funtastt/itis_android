@@ -22,4 +22,8 @@
     <string name="you_have_to_allow_sending_notifications">You have to allow sending notifications</string>
     <string name="cancelled_coroutines">Cancelled coroutines: %d</string>
     <string name="success">Success!</string>
+    <string name="allow_notifications_through_settings">Allow notifications through settings</string>
+    <string name="show_settings">Show settings</string>
+    <string name="show_message">Show message</string>
+    <string name="coroutines_count_d">Coroutines count: %d</string>
 </resources>

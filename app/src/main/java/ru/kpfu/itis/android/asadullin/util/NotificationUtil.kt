@@ -17,7 +17,7 @@ object NotificationUtil {
     var isBigTextNotification = false
     var areButtonsShown = false
 
-    private fun getNotificationChannelId(importance: Importance) = "channel_${importance.name}"
+    private fun getNotificationChannelTag(importance: Importance) = "channel_${importance.name}"
     fun createNotificationChannels(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationManager = context
@@ -25,7 +25,7 @@ object NotificationUtil {
 
             for (importance in Importance.values()) {
                 NotificationChannel(
-                    getNotificationChannelId(importance),
+                    getNotificationChannelTag(importance),
                     importance.importance,
                     importance.id,
                 ).also {
@@ -36,10 +36,10 @@ object NotificationUtil {
     }
 
     fun sendNotification(context: Context, title: String, text: String) {
-        val channelId = getNotificationChannelId(importance)
+        val channelTag = getNotificationChannelTag(importance)
         val builder = NotificationCompat.Builder(
             context,
-            channelId,
+            channelTag,
         )
             .setSmallIcon(R.drawable.notification_icon)
             .setContentTitle(title)
@@ -48,7 +48,7 @@ object NotificationUtil {
             .setPublicVersion(
                 NotificationCompat.Builder(
                     context,
-                    channelId
+                    channelTag
                 )
                     .setSmallIcon(R.drawable.notification_icon)
                     .setContentTitle(title)
@@ -75,7 +75,7 @@ object NotificationUtil {
             builder.addAction(
                 NotificationCompat.Action(
                     null,
-                    "Show message",
+                    context.getString(R.string.show_message),
                     pShowMessageIntent
                 )
             )
@@ -92,7 +92,7 @@ object NotificationUtil {
             builder.addAction(
                 NotificationCompat.Action(
                     null,
-                    "Show settings",
+                    context.getString(R.string.show_settings),
                     pShowSettingsIntent
                 )
             )
