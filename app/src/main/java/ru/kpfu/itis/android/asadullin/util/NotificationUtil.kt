@@ -16,6 +16,7 @@ object NotificationUtil {
     var visibility = Visibility.Public
     var isBigTextNotification = false
     var areButtonsShown = false
+    var allowedToShowNotifications = false
 
     private fun getNotificationChannelTag(importance: Importance) = "channel_${importance.name}"
     fun createNotificationChannels(context: Context) {
@@ -66,7 +67,7 @@ object NotificationUtil {
             val showMessageIntent = Intent(context, MainActivity::class.java)
             showMessageIntent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
             showMessageIntent.putExtra("action", MainActivity.ACTION_SHOW_MESSAGE)
-            val pShowMessageIntent = PendingIntent.getActivity(
+            val messagePendingIntent = PendingIntent.getActivity(
                 context,
                 0,
                 showMessageIntent,
@@ -76,14 +77,14 @@ object NotificationUtil {
                 NotificationCompat.Action(
                     null,
                     context.getString(R.string.show_message),
-                    pShowMessageIntent
+                    messagePendingIntent
                 )
             )
 
             val showSettingsIntent = Intent(context, MainActivity::class.java)
             showSettingsIntent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
             showSettingsIntent.putExtra("action", MainActivity.ACTION_SHOW_SETTINGS)
-            val pShowSettingsIntent = PendingIntent.getActivity(
+            val settingsPendingIntent = PendingIntent.getActivity(
                 context,
                 1,
                 showSettingsIntent,
@@ -93,7 +94,7 @@ object NotificationUtil {
                 NotificationCompat.Action(
                     null,
                     context.getString(R.string.show_settings),
-                    pShowSettingsIntent
+                    settingsPendingIntent
                 )
             )
         }

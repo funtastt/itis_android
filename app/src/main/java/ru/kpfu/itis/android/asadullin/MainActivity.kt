@@ -34,12 +34,6 @@ class MainActivity : AppCompatActivity() {
     private var _viewBinding: ActivityFragmentContainerBinding? = null
     private val viewBinding get() = _viewBinding!!
 
-    private var job: Job? = null
-    private var coroutinesDone = 0
-    private var maxCoroutines = 0
-    private var stopOnBackground = false
-    var allowedToShowNotifications = false
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _viewBinding = ActivityFragmentContainerBinding.inflate(layoutInflater).also {
@@ -61,6 +55,9 @@ class MainActivity : AppCompatActivity() {
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 requestNotificationsPermissionWithRationale()
+                NotificationUtil.allowedToShowNotifications = false
+            } else {
+                NotificationUtil.allowedToShowNotifications = true
             }
         }
 
@@ -129,11 +126,11 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             PERMISSION_REQUEST_CODE -> {
-                allowedToShowNotifications =
+                NotificationUtil.allowedToShowNotifications =
                     grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
             }
         }
-        if (!allowedToShowNotifications) remindPermissionSettings()
+        if (!NotificationUtil.allowedToShowNotifications) remindPermissionSettings()
     }
 
     fun remindPermissionSettings() {
@@ -152,53 +149,6 @@ class MainActivity : AppCompatActivity() {
             Uri.parse("package:$packageName")
         )
         startActivityForResult(appSettingsIntent, PERMISSION_REQUEST_CODE)
-    }
-
-    fun startAllCoroutines(n: Int, async: Boolean, stopOnBackground: Boolean) {
-        maxCoroutines = n
-        this.stopOnBackground = stopOnBackground
-        job = lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
-                repeat(n) {
-                    if (async) {
-                        launch { startSingleCoroutine(it + 1, n) }
-                    } else {
-                        startSingleCoroutine(it + 1, n)
-                    }
-                }
-            }
-        }.also {
-            it.invokeOnCompletion { cause ->
-                if (cause == null) {
-                    NotificationUtil.sendNotification(
-                        this,
-                        getString(R.string.success),
-                        getString(R.string.job_done)
-                    )
-                } else if (cause is CancellationException) {
-                    Log.e(
-                        javaClass.name,
-                        String.format(getString(R.string.cancelled_coroutines), coroutinesDone)
-                    )
-                }
-                job = null
-            }
-        }
-    }
-
-    private suspend fun startSingleCoroutine(index: Int, total: Int) {
-        delay(2000)
-        Log.e(javaClass.name, String.format(getString(R.string.finished_coroutines), index, total))
-        coroutinesDone++
-    }
-
-    override fun onStop() {
-        if (stopOnBackground) {
-            job?.cancel(
-                getString(R.string.app_went_on_bg)
-            )
-        }
-        super.onStop()
     }
 
     override fun onDestroy() {

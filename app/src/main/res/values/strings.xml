@@ -26,4 +26,5 @@
     <string name="show_settings">Show settings</string>
     <string name="show_message">Show message</string>
     <string name="coroutines_count_d">Coroutines count: %d</string>
+    <string name="stop_on_background">Stop on background</string>
 </resources>

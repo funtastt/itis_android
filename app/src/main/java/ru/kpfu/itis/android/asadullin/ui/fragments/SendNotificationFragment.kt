@@ -32,9 +32,8 @@ class SendNotificationFragment : Fragment(R.layout.fragment_send_notification) {
     private fun initViews() {
         with(viewBinding) {
             btnShowNotification.setOnClickListener {
-                val mainActivity = activity as MainActivity
-                if (!mainActivity.allowedToShowNotifications) {
-                    mainActivity.remindPermissionSettings()
+                if (!NotificationUtil.allowedToShowNotifications) {
+                    (activity as MainActivity).remindPermissionSettings()
                 } else {
                     NotificationUtil.sendNotification(
                         requireContext(),
