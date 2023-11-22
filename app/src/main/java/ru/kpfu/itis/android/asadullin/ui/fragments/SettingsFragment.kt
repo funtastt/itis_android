@@ -9,9 +9,9 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import ru.kpfu.itis.android.asadullin.lesson1.R
 import ru.kpfu.itis.android.asadullin.lesson1.databinding.FragmentSettingsBinding
-import ru.kpfu.itis.android.asadullin.util.NotificationUtil
-import ru.kpfu.itis.android.asadullin.util.NotificationUtil.Visibility
-import ru.kpfu.itis.android.asadullin.util.NotificationUtil.Importance
+import ru.kpfu.itis.android.asadullin.util.Util
+import ru.kpfu.itis.android.asadullin.util.Util.Visibility
+import ru.kpfu.itis.android.asadullin.util.Util.Importance
 
 
 class SettingsFragment : Fragment(R.layout.fragment_settings) {
@@ -38,22 +38,22 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             ).also {
                 it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 spinnerImportance.adapter = it
-                spinnerImportance.setSelection(NotificationUtil.importance.ordinal)
+                spinnerImportance.setSelection(Util.importance.ordinal)
                 spinnerImportance.onItemSelectedListener =
                     object : AdapterView.OnItemSelectedListener {
                         override fun onItemSelected(
                             parent: AdapterView<*>, view: View?, position: Int, id: Long
                         ) {
                             val selected = parent.getItemAtPosition(position) as Importance
-                            if (selected != NotificationUtil.importance) {
-                                NotificationUtil.importance = selected
+                            if (selected != Util.importance) {
+                                Util.importance = selected
                             }
                         }
 
                         override fun onNothingSelected(parent: AdapterView<*>) {
                             val selected = Importance.High
-                            if (selected != NotificationUtil.importance) {
-                                NotificationUtil.importance = selected
+                            if (selected != Util.importance) {
+                                Util.importance = selected
                                 parent.setSelection(selected.ordinal)
                             }
                         }
@@ -65,32 +65,32 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             ).also {
                 it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 spinnerVisibility.adapter = it
-                spinnerVisibility.setSelection(NotificationUtil.visibility.ordinal)
+                spinnerVisibility.setSelection(Util.visibility.ordinal)
                 spinnerVisibility.onItemSelectedListener =
                     object : AdapterView.OnItemSelectedListener {
                         override fun onItemSelected(
                             parent: AdapterView<*>, view: View?, position: Int, id: Long
                         ) {
-                            NotificationUtil.visibility =
+                            Util.visibility =
                                 parent.getItemAtPosition(position) as Visibility
                         }
 
                         override fun onNothingSelected(parent: AdapterView<*>) {
-                            NotificationUtil.visibility = Visibility.Public
-                            parent.setSelection(NotificationUtil.visibility.ordinal)
+                            Util.visibility = Visibility.Public
+                            parent.setSelection(Util.visibility.ordinal)
                         }
                     }
             }
 
-            cbAllowBigText.isChecked = NotificationUtil.isBigTextNotification
-            cbShowButtons.isChecked = NotificationUtil.areButtonsShown
+            cbAllowBigText.isChecked = Util.isBigTextNotification
+            cbShowButtons.isChecked = Util.areButtonsShown
 
             cbAllowBigText.setOnCheckedChangeListener { _, isChecked ->
-                NotificationUtil.isBigTextNotification = isChecked
+                Util.isBigTextNotification = isChecked
             }
 
             cbShowButtons.setOnCheckedChangeListener { _, isChecked ->
-                NotificationUtil.areButtonsShown = isChecked
+                Util.areButtonsShown = isChecked
             }
         }
     }

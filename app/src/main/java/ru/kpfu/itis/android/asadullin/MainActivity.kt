@@ -2,37 +2,30 @@ package ru.kpfu.itis.android.asadullin
 
 import android.Manifest
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.graphics.drawable.AnimatedVectorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import ru.kpfu.itis.android.asadullin.lesson1.R
 import ru.kpfu.itis.android.asadullin.lesson1.databinding.ActivityFragmentContainerBinding
-import ru.kpfu.itis.android.asadullin.util.NotificationUtil
+import ru.kpfu.itis.android.asadullin.util.AirplaneModeChangeReceiver
+import ru.kpfu.itis.android.asadullin.util.Util
 
 
 class MainActivity : AppCompatActivity() {
     private var _viewBinding: ActivityFragmentContainerBinding? = null
     private val viewBinding get() = _viewBinding!!
+    private var receiver: AirplaneModeChangeReceiver? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,15 +48,28 @@ class MainActivity : AppCompatActivity() {
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 requestNotificationsPermissionWithRationale()
-                NotificationUtil.allowedToShowNotifications = false
+                Util.allowedToShowNotifications = false
             } else {
-                NotificationUtil.allowedToShowNotifications = true
+                Util.allowedToShowNotifications = true
             }
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationUtil.createNotificationChannels(this)
+            Util.createNotificationChannels(this)
         }
+
+        Util.isAirplaneModeOn = Util.isAirplaneModeOn(applicationContext)
+        viewBinding.vWarningBackground.visibility = if (Util.isAirplaneModeOn) View.VISIBLE else View.GONE
+
+        receiver = AirplaneModeChangeReceiver()
+
+        IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED).also {
+            registerReceiver(receiver, it)
+        }
+    }
+
+    fun showWarningMessage(isVisible : Boolean) {
+        viewBinding.vWarningBackground.visibility = if (isVisible) View.GONE else View.VISIBLE
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -126,11 +132,11 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             PERMISSION_REQUEST_CODE -> {
-                NotificationUtil.allowedToShowNotifications =
+                Util.allowedToShowNotifications =
                     grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
             }
         }
-        if (!NotificationUtil.allowedToShowNotifications) remindPermissionSettings()
+        if (!Util.allowedToShowNotifications) remindPermissionSettings()
     }
 
     fun remindPermissionSettings() {
@@ -139,11 +145,11 @@ class MainActivity : AppCompatActivity() {
             .setIcon(getDrawable(R.drawable.notification_icon))
             .setMessage(R.string.please_allow_sending_notifications)
             .setPositiveButton(R.string.go_to_settings) { _, _ ->
-                openApplicationSettings()
+                openAndroidSettings()
             }.create().show()
     }
 
-    private fun openApplicationSettings() {
+    private fun openAndroidSettings() {
         val appSettingsIntent = Intent(
             Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
             Uri.parse("package:$packageName")
@@ -153,6 +159,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         _viewBinding = null
+        unregisterReceiver(receiver)
         super.onDestroy()
     }
 

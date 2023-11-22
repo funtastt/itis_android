@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +17,8 @@ import kotlinx.coroutines.withContext
 import ru.kpfu.itis.android.asadullin.MainActivity
 import ru.kpfu.itis.android.asadullin.lesson1.R
 import ru.kpfu.itis.android.asadullin.lesson1.databinding.FragmentCoroutinesBinding
-import ru.kpfu.itis.android.asadullin.util.NotificationUtil
+import ru.kpfu.itis.android.asadullin.util.AirplaneModeOnVariable
+import ru.kpfu.itis.android.asadullin.util.Util
 import java.util.concurrent.CancellationException
 
 class CoroutinesFragment : Fragment(R.layout.fragment_coroutines) {
@@ -67,6 +69,16 @@ class CoroutinesFragment : Fragment(R.layout.fragment_coroutines) {
                     cbStopOnBg.isChecked,
                 )
             }
+            btnExecute.isEnabled = context?.let { !Util.isAirplaneModeOn(it) } ?: false
+
+            AirplaneModeOnVariable.listener = object : AirplaneModeOnVariable.ChangeListener {
+                override fun onChange() {
+                    val isAirplaneModeOn = Util.isAirplaneModeOn
+
+                    btnExecute.isEnabled = !isAirplaneModeOn
+                    (activity as MainActivity).showWarningMessage(!isAirplaneModeOn)
+                }
+            }
         }
     }
 
@@ -75,11 +87,11 @@ class CoroutinesFragment : Fragment(R.layout.fragment_coroutines) {
         this.stopOnBackground = stopOnBackground
         job = lifecycleScope.launch {
             withContext(Dispatchers.IO) {
-                repeat(n) {
+                for(i in 1..n) {
                     if (async) {
-                        launch { startSingleCoroutine(it + 1, n) }
+                        launch { startSingleCoroutine(i, n) }
                     } else {
-                        startSingleCoroutine(it + 1, n)
+                        startSingleCoroutine(i, n)
                     }
                 }
             }
@@ -87,7 +99,7 @@ class CoroutinesFragment : Fragment(R.layout.fragment_coroutines) {
             it.invokeOnCompletion { cause ->
                 if (cause == null) {
                     context?.let { it1 ->
-                        NotificationUtil.sendNotification(
+                        Util.sendNotification(
                             it1,
                             getString(R.string.success),
                             getString(R.string.job_done)

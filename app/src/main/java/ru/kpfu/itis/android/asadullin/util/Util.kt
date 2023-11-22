@@ -7,34 +7,19 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import ru.kpfu.itis.android.asadullin.MainActivity
 import ru.kpfu.itis.android.asadullin.lesson1.R
 
-object NotificationUtil {
+
+object Util {
     var importance = Importance.High
     var visibility = Visibility.Public
     var isBigTextNotification = false
     var areButtonsShown = false
     var allowedToShowNotifications = false
-
-    private fun getNotificationChannelTag(importance: Importance) = "channel_${importance.name}"
-    fun createNotificationChannels(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationManager = context
-                .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-            for (importance in Importance.values()) {
-                NotificationChannel(
-                    getNotificationChannelTag(importance),
-                    importance.importance,
-                    importance.id,
-                ).also {
-                    notificationManager.createNotificationChannel(it)
-                }
-            }
-        }
-    }
+    var isAirplaneModeOn = false
 
     fun sendNotification(context: Context, title: String, text: String) {
         val channelTag = getNotificationChannelTag(importance)
@@ -114,7 +99,26 @@ object NotificationUtil {
         notificationManager.notify(0, builder.build())
     }
 
-    enum class Importance(val importance: String, val id: Int) {
+    private fun getNotificationChannelTag(importance: Importance) = "channel_${importance.name}"
+    fun createNotificationChannels(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationManager = context
+                .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+            for (importance in Importance.values()) {
+                NotificationChannel(
+                    getNotificationChannelTag(importance),
+                    importance.importance,
+                    importance.id,
+                ).also {
+                    notificationManager.createNotificationChannel(it)
+                }
+            }
+        }
+    }
+
+    fun isAirplaneModeOn(context: Context) = Settings.System.getInt(context.contentResolver, Settings.Global.AIRPLANE_MODE_ON, 0) == 1
+            enum class Importance(val importance: String, val id: Int) {
         Medium("Medium", NotificationManager.IMPORTANCE_LOW),
         High("High", NotificationManager.IMPORTANCE_DEFAULT),
         Urgent("Urgent", NotificationManager.IMPORTANCE_HIGH);

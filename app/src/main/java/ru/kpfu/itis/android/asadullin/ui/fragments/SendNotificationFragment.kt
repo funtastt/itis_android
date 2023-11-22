@@ -4,11 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.google.android.material.snackbar.Snackbar
 import ru.kpfu.itis.android.asadullin.MainActivity
 import ru.kpfu.itis.android.asadullin.lesson1.R
 import ru.kpfu.itis.android.asadullin.lesson1.databinding.FragmentSendNotificationBinding
-import ru.kpfu.itis.android.asadullin.util.NotificationUtil
+import ru.kpfu.itis.android.asadullin.util.AirplaneModeOnVariable
+import ru.kpfu.itis.android.asadullin.util.Util
+
 
 class SendNotificationFragment : Fragment(R.layout.fragment_send_notification) {
     private var _viewBinding: FragmentSendNotificationBinding? = null
@@ -32,14 +36,31 @@ class SendNotificationFragment : Fragment(R.layout.fragment_send_notification) {
     private fun initViews() {
         with(viewBinding) {
             btnShowNotification.setOnClickListener {
-                if (!NotificationUtil.allowedToShowNotifications) {
+                if (!Util.allowedToShowNotifications) {
                     (activity as MainActivity).remindPermissionSettings()
                 } else {
-                    NotificationUtil.sendNotification(
-                        requireContext(),
-                        etNotificationTitle.text.toString(),
-                        etNotificationContent.text.toString(),
-                    )
+                    val title = etNotificationTitle.text.toString()
+                    val content = etNotificationContent.text.toString()
+
+                    if (title.isEmpty() || content.isEmpty()) {
+                        Snackbar.make(root, "Notification title and content can't be empty!", Snackbar.LENGTH_SHORT).show()
+                    } else {
+                        Util.sendNotification(
+                            requireContext(),
+                            title,
+                            content
+                        )
+                    }
+
+                }
+            }
+            btnShowNotification.isEnabled = context?.let { !Util.isAirplaneModeOn(it) } ?: false
+            AirplaneModeOnVariable.listener = object : AirplaneModeOnVariable.ChangeListener {
+                override fun onChange() {
+                    val isAirplaneModeOn = Util.isAirplaneModeOn
+
+                    btnShowNotification.isEnabled = !isAirplaneModeOn
+                    (activity as MainActivity).showWarningMessage(!isAirplaneModeOn)
                 }
             }
         }
