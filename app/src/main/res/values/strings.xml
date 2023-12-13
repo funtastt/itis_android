@@ -30,4 +30,8 @@
     <string name="entered_email_is_invalid">Entered email is invalid, please try another</string>
     <string name="entered_username_is_invalid">Entered username is invalid, please try another</string>
     <string name="entered_phone_is_invalid">Entered phone number is invalid, please try another</string>
+    <string name="current_password">Current password</string>
+    <string name="new_password">New password</string>
+    <string name="wrong_password_entered">Current password was entered incorrectly</string>
+    <string name="successfully_changed_password">Successfully changed password</string>
 </resources>

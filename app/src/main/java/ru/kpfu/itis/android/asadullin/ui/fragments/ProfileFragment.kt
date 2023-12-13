@@ -19,9 +19,13 @@ import ru.kpfu.itis.android.asadullin.data.db.entity.UserEntity
 import ru.kpfu.itis.android.asadullin.databinding.FragmentProfileBinding
 import ru.kpfu.itis.android.asadullin.di.ServiceLocator
 import ru.kpfu.itis.android.asadullin.model.UserModel
+import ru.kpfu.itis.android.asadullin.utils.ApplicationRegex
 import ru.kpfu.itis.android.asadullin.utils.ApplicationRegex.EMAIL_PATTERN
+import ru.kpfu.itis.android.asadullin.utils.ApplicationRegex.MEDIUM_PASSWORD_PATTERN
 import ru.kpfu.itis.android.asadullin.utils.ApplicationRegex.PHONE_PATTERN
+import ru.kpfu.itis.android.asadullin.utils.ApplicationRegex.STRONG_PASSWORD_PATTERN
 import ru.kpfu.itis.android.asadullin.utils.ApplicationRegex.USERNAME_PATTERN
+import ru.kpfu.itis.android.asadullin.utils.PasswordEncryptor
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
     private var _binding: FragmentProfileBinding? = null
@@ -83,6 +87,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             }
 
             btnChangePassword.setOnClickListener {
+                showChangePasswordDialog()
             }
 
             btnDeleteProfile.setOnClickListener {
@@ -193,4 +198,58 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             .setBackgroundInsetEnd(padding)
             .show()
     }
+
+    private fun showChangePasswordDialog() {
+        val inflater = LayoutInflater.from(requireContext())
+        val dialogView = inflater.inflate(R.layout.dialog_change_password, null)
+
+        val currentPasswordEditText: EditText = dialogView.findViewById(R.id.etCurrentPassword)
+        val newPasswordEditText: EditText = dialogView.findViewById(R.id.etNewPassword)
+
+        val padding = resources.getDimensionPixelSize(R.dimen.dialog_padding)
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setView(dialogView)
+            .setPositiveButton(getString(R.string.confirm)) { _, _ ->
+                val enteredCurrentPassword = currentPasswordEditText.text.toString()
+                val enteredNewPassword = newPasswordEditText.text.toString()
+
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val currentPassword = userDao.getUserById(getUserId()).password
+
+                    if (!PasswordEncryptor.checkPassword(enteredCurrentPassword, currentPassword)) {
+                        withContext(Dispatchers.Main) {
+                            Snackbar.make(
+                                requireView(),
+                                getString(R.string.wrong_password_entered),
+                                Snackbar.LENGTH_SHORT
+                            ).show()
+                        }
+                    } else {
+                        val message : String
+                        if (STRONG_PASSWORD_PATTERN.matcher(enteredNewPassword).matches()) {
+                            message = getString(R.string.successfully_changed_password)
+                            userDao.updatePassword(getUserId(), PasswordEncryptor.encryptPassword(enteredNewPassword))
+                        } else if (MEDIUM_PASSWORD_PATTERN.matcher(enteredNewPassword).matches()) {
+                            message = getString(R.string.one_of_the_conditions_is_not_met)
+                        } else {
+                            message = getString(R.string.password_is_too_simple)
+                        }
+
+                        withContext(Dispatchers.Main) {
+                            Snackbar.make(
+                                requireView(),
+                                message,
+                                Snackbar.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .setBackgroundInsetStart(padding)
+            .setBackgroundInsetEnd(padding)
+            .show()
+    }
+
 }

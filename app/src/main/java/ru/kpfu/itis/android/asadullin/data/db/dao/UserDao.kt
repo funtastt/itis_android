@@ -33,4 +33,7 @@ interface UserDao {
 
     @Query("UPDATE users SET phone_number = :newPhone WHERE user_id = :userId")
     fun updatePhoneNumber(userId: Int, newPhone: String)
+
+    @Query("UPDATE users SET password = :newPassword WHERE user_id = :userId")
+    fun updatePassword(userId: Int, newPassword: String)
 }
