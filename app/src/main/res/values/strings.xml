@@ -1,3 +1,19 @@
 <resources>
-    <string name="app_name">*dummy app name*</string>
+    <string name="app_name">MovieSearch</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login">Log In</string>
+    <string name="register">Register</string>
+    <string name="invalid_email">Invalid email address</string>
+    <string name="one_of_the_conditions_is_not_met">One of the conditions is not met</string>
+    <string name="password_is_too_simple">Password is too simple</string>
+    <string name="username">Username</string>
+    <string name="phone_number">Phone number</string>
+    <string name="invalid_username">Invalid username</string>
+    <string name="invalid_phone_number">Invalid phone number</string>
+    <string name="user_with_this_phone_number_exists">User with this phone number already exists</string>
+    <string name="user_with_this_email_exists">User with this email already exists</string>
+    <string name="user_with_this_username_exists">User with this username already exists</string>
+    <string name="user_with_this_email_does_not_exists">User with this email doesn\'t exist</string>
+    <string name="wrong_password">Wrong password! Please try another...</string>
 </resources>
