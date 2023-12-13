@@ -111,7 +111,7 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
                 tilUsername.error = getString(R.string.invalid_username)
             } else {
                 lifecycleScope.launch(Dispatchers.IO) {
-                    val userExists = userDao.getUsersByUsername(username)?.isNotEmpty() ?: false
+                    val userExists = userDao.getUsersByUsername(username).isNotEmpty()
                     if (userExists) {
                         isAccessible = false
                     }
@@ -150,7 +150,7 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
                 tilEmail.error = getString(R.string.invalid_email)
             } else {
                 lifecycleScope.launch(Dispatchers.IO) {
-                    val userExists = userDao.getUsersByEmail(email)?.isNotEmpty() ?: false
+                    val userExists = userDao.getUsersByEmail(email).isNotEmpty()
                     if (userExists) {
                         isAccessible = false
                     }

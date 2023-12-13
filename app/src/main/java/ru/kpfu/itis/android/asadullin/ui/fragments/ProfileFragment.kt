@@ -1,16 +1,37 @@
 package ru.kpfu.itis.android.asadullin.ui.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.kpfu.itis.android.asadullin.R
+import ru.kpfu.itis.android.asadullin.data.db.dao.UserDao
+import ru.kpfu.itis.android.asadullin.data.db.entity.UserEntity
 import ru.kpfu.itis.android.asadullin.databinding.FragmentProfileBinding
+import ru.kpfu.itis.android.asadullin.di.ServiceLocator
+import ru.kpfu.itis.android.asadullin.model.UserModel
+import ru.kpfu.itis.android.asadullin.utils.ApplicationRegex.EMAIL_PATTERN
+import ru.kpfu.itis.android.asadullin.utils.ApplicationRegex.PHONE_PATTERN
+import ru.kpfu.itis.android.asadullin.utils.ApplicationRegex.USERNAME_PATTERN
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
     private var _binding: FragmentProfileBinding? = null
     private val binding: FragmentProfileBinding get() = _binding!!
+
+    private val sharedPreferences by lazy {
+        requireActivity().getSharedPreferences("ApplicationPreferences", Context.MODE_PRIVATE)
+    }
+
+    private val userDao: UserDao = ServiceLocator.getDatabaseInstance().userDao
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -26,7 +47,150 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     }
 
     private fun initViews() {
+        with(binding) {
+            lifecycleScope.launch(Dispatchers.IO) {
+                val currentUser = UserModel.fromUserEntity(userDao.getUserById(getUserId()))
+                withContext(Dispatchers.Main) {
+                    tvProfilePhoneNumber.text = currentUser.phoneNumber
+                    tvProfileEmail.text = currentUser.email
+                    tvProfileUsername.text = currentUser.name
+                }
+            }
+            btnChangeProfileUsername.setOnClickListener {
+                val currentUsername = binding.tvProfileUsername.text.toString()
+                showChangeDialog(
+                    getString(R.string.enter_username),
+                    currentUsername
+                ) { newUsername ->
+                    checkUsernameValidity(newUsername)
+                }
+            }
+            btnChangeProfileEmail.setOnClickListener {
+                val currentEmail = binding.tvProfileEmail.text.toString()
+                showChangeDialog(getString(R.string.enter_email), currentEmail) { newEmail ->
+                    checkEmailValidity(newEmail)
+                }
+            }
 
+            btnChangeProfilePhoneNumber.setOnClickListener {
+                val currentPhoneNumber = binding.tvProfilePhoneNumber.text.toString()
+                showChangeDialog(
+                    getString(R.string.enter_phone_number),
+                    currentPhoneNumber
+                ) { newPhoneNumber ->
+                    checkPhoneNumberValidity(newPhoneNumber)
+                }
+            }
+
+            btnChangePassword.setOnClickListener {
+            }
+
+            btnDeleteProfile.setOnClickListener {
+            }
+        }
     }
 
+    private fun getUserId() = sharedPreferences.getInt("userId", -1)
+
+    private fun checkPhoneNumberValidity(newPhoneNumber: String) {
+        if (PHONE_PATTERN.matcher(newPhoneNumber).matches()) {
+            lifecycleScope.launch(Dispatchers.IO) {
+                val usernameExists = userDao.getUsersByPhoneNumber(newPhoneNumber).isNotEmpty()
+
+                if (usernameExists) {
+                    withContext(Dispatchers.Main) {
+                        Snackbar.make(
+                            requireView(),
+                            getString(R.string.user_with_this_phone_number_exists),
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    userDao.updatePhoneNumber(getUserId(), newPhoneNumber)
+                    binding.tvProfilePhoneNumber.text = newPhoneNumber
+                }
+            }
+
+        } else {
+            Snackbar.make(
+                requireView(),
+                getString(R.string.entered_phone_is_invalid),
+                Snackbar.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun checkEmailValidity(newEmail: String) {
+        if (EMAIL_PATTERN.matcher(newEmail).matches()) {
+            lifecycleScope.launch(Dispatchers.IO) {
+                val usernameExists = userDao.getUsersByEmail(newEmail).isNotEmpty()
+
+                if (usernameExists) {
+                    withContext(Dispatchers.Main) {
+                        Snackbar.make(
+                            requireView(),
+                            getString(R.string.user_with_this_email_exists),
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    userDao.updateEmail(getUserId(), newEmail)
+                    binding.tvProfileEmail.text = newEmail
+                }
+            }
+
+        } else {
+            Snackbar.make(
+                requireView(),
+                getString(R.string.entered_email_is_invalid),
+                Snackbar.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun checkUsernameValidity(newUsername: String) {
+        if (USERNAME_PATTERN.matcher(newUsername).matches()) {
+            lifecycleScope.launch(Dispatchers.IO) {
+                val usernameExists = userDao.getUsersByUsername(newUsername).isNotEmpty()
+
+                if (usernameExists) {
+                    withContext(Dispatchers.Main) {
+                        Snackbar.make(
+                            requireView(),
+                            getString(R.string.user_with_this_username_exists),
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    userDao.updateUsername(getUserId(), newUsername)
+                    binding.tvProfileUsername.text = newUsername
+                }
+            }
+        } else {
+            Snackbar.make(
+                requireView(),
+                getString(R.string.entered_username_is_invalid),
+                Snackbar.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun showChangeDialog(title: String, currentValue: String, onConfirm: (String) -> Unit) {
+        val editText = EditText(requireContext())
+        editText.setText(currentValue)
+
+        val padding = resources.getDimensionPixelSize(R.dimen.dialog_padding)
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(title)
+            .setView(editText)
+            .setPositiveButton(getString(R.string.confirm)) { _, _ ->
+                val newValue = editText.text.toString()
+                onConfirm(newValue)
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .setBackgroundInsetStart(padding)
+            .setBackgroundInsetEnd(padding)
+            .show()
+    }
 }

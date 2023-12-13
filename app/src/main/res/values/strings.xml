@@ -19,4 +19,15 @@
     <string name="catalog">Catalog</string>
     <string name="add_movie">Add movie</string>
     <string name="profile">Profile</string>
+    <string name="change">Change</string>
+    <string name="change_password">Change password</string>
+    <string name="delete_profile">Delete Profile</string>
+    <string name="enter_username">Please, enter new username</string>
+    <string name="enter_email">Please, enter new email</string>
+    <string name="enter_phone_number">Please, enter new phone number</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    <string name="entered_email_is_invalid">Entered email is invalid, please try another</string>
+    <string name="entered_username_is_invalid">Entered username is invalid, please try another</string>
+    <string name="entered_phone_is_invalid">Entered phone number is invalid, please try another</string>
 </resources>

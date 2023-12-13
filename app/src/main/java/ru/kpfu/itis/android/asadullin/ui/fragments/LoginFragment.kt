@@ -16,10 +16,7 @@ import ru.kpfu.itis.android.asadullin.data.db.entity.UserEntity
 import ru.kpfu.itis.android.asadullin.databinding.FragmentLoginBinding
 import ru.kpfu.itis.android.asadullin.di.ServiceLocator
 import ru.kpfu.itis.android.asadullin.utils.ApplicationRegex.EMAIL_PATTERN
-import ru.kpfu.itis.android.asadullin.utils.ApplicationRegex.MEDIUM_PASSWORD_PATTERN
-import ru.kpfu.itis.android.asadullin.utils.ApplicationRegex.STRONG_PASSWORD_PATTERN
 import ru.kpfu.itis.android.asadullin.utils.PasswordEncryptor
-import java.time.LocalDateTime
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
     private var _binding: FragmentLoginBinding? = null
@@ -56,22 +53,22 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 }
 
                 lifecycleScope.launch(Dispatchers.IO) {
-                    val users: List<UserEntity>? =
+                    val users: List<UserEntity> =
                         ServiceLocator.getDatabaseInstance().userDao.getUsersByEmail(email)
-                    if (users?.isEmpty() == true) {
+                    if (users.isEmpty()) {
                         withContext(Dispatchers.Main) {
                             tilEmail.error =
                                 getString(R.string.user_with_this_email_does_not_exists)
                         }
                     } else {
-                        val user = users?.get(0)
-                        val userPassword = user?.password ?: ""
+                        val user = users[0]
+                        val userPassword = user.password
 
                         withContext(Dispatchers.Main) {
                             tilEmail.error = null
 
                             if (PasswordEncryptor.checkPassword(password, userPassword)) {
-                                saveUserId(user?.userId ?: -1)
+                                saveUserId(user.userId)
                                 findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
                             } else {
                                 tilPassword.error = getString(R.string.wrong_password)

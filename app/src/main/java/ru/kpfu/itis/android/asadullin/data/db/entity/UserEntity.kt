@@ -16,16 +16,18 @@ data class UserEntity(
     @ColumnInfo(name = "name") val name: String,
     val email: String,
     val password: String,
-    @ColumnInfo(name = "is_deleted", defaultValue = false.toString()) val isDeleted: Boolean = false,
+    @ColumnInfo(
+        name = "is_deleted",
+        defaultValue = false.toString()
+    ) val isDeleted: Boolean = false,
 ) {
     companion object {
-        fun fromUserModel(userModel: UserModel): UserEntity {
-            return UserEntity(
-                phoneNumber = userModel.phoneNumber,
-                name = userModel.name,
-                email = userModel.email,
-                password = userModel.password
-            )
-        }
+        fun fromUserModel(userModel: UserModel) = UserEntity(
+            phoneNumber = userModel.phoneNumber,
+            name = userModel.name,
+            email = userModel.email,
+            password = userModel.password
+        )
+
     }
 }
