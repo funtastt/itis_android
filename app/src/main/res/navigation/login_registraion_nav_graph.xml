@@ -14,8 +14,8 @@
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/registerFragment" />
         <action
-            android:id="@+id/action_loginFragment_to_moviesCatalogFragment"
-            app:destination="@id/moviesCatalogFragment" />
+            android:id="@+id/action_loginFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
     </fragment>
 
     <fragment
@@ -26,9 +26,9 @@
     </fragment>
 
     <fragment
-        android:id="@+id/moviesCatalogFragment"
-        android:name="ru.kpfu.itis.android.asadullin.ui.fragments.MoviesCatalogFragment"
-        android:label="MoviesCatalogFragment"
-        tools:layout="@layout/fragment_movies_catalog">
+        android:id="@+id/mainFragment"
+        android:name="ru.kpfu.itis.android.asadullin.ui.fragments.MainFragment"
+        android:label="mainFragment"
+        tools:layout="@layout/fragment_main">
     </fragment>
 </navigation>

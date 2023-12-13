@@ -16,4 +16,7 @@
     <string name="user_with_this_username_exists">User with this username already exists</string>
     <string name="user_with_this_email_does_not_exists">User with this email doesn\'t exist</string>
     <string name="wrong_password">Wrong password! Please try another...</string>
+    <string name="catalog">Catalog</string>
+    <string name="add_movie">Add movie</string>
+    <string name="profile">Profile</string>
 </resources>

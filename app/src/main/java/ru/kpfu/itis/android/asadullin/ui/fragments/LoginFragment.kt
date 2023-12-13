@@ -61,7 +61,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                             tilEmail.error = null
 
                             if (PasswordEncryptor.checkPassword(password, userPassword)) {
-                                findNavController().navigate(R.id.action_loginFragment_to_moviesCatalogFragment)
+                                findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
                             } else {
                                 tilPassword.error = getString(R.string.wrong_password)
                             }
