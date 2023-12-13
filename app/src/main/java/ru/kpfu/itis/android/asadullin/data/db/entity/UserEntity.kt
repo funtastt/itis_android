@@ -20,6 +20,9 @@ data class UserEntity(
         name = "is_deleted",
         defaultValue = false.toString()
     ) val isDeleted: Boolean = false,
+    @ColumnInfo(
+        name = "deleted_at"
+    ) val deletedAt : Long? = null
 ) {
     companion object {
         fun fromUserModel(userModel: UserModel) = UserEntity(

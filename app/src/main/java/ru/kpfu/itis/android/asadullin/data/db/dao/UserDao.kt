@@ -1,6 +1,7 @@
 package ru.kpfu.itis.android.asadullin.data.db.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -36,4 +37,7 @@ interface UserDao {
 
     @Query("UPDATE users SET password = :newPassword WHERE user_id = :userId")
     fun updatePassword(userId: Int, newPassword: String)
+
+    @Query("UPDATE users SET is_deleted = 1, deleted_at = :currentTime WHERE user_id = :userId")
+    fun safeDeleteUser(userId: Int, currentTime : Long)
 }

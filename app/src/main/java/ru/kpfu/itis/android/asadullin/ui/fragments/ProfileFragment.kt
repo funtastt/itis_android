@@ -1,6 +1,7 @@
 package ru.kpfu.itis.android.asadullin.ui.fragments
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
@@ -15,11 +17,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.kpfu.itis.android.asadullin.R
 import ru.kpfu.itis.android.asadullin.data.db.dao.UserDao
-import ru.kpfu.itis.android.asadullin.data.db.entity.UserEntity
 import ru.kpfu.itis.android.asadullin.databinding.FragmentProfileBinding
 import ru.kpfu.itis.android.asadullin.di.ServiceLocator
 import ru.kpfu.itis.android.asadullin.model.UserModel
-import ru.kpfu.itis.android.asadullin.utils.ApplicationRegex
+import ru.kpfu.itis.android.asadullin.ui.MainActivity
 import ru.kpfu.itis.android.asadullin.utils.ApplicationRegex.EMAIL_PATTERN
 import ru.kpfu.itis.android.asadullin.utils.ApplicationRegex.MEDIUM_PASSWORD_PATTERN
 import ru.kpfu.itis.android.asadullin.utils.ApplicationRegex.PHONE_PATTERN
@@ -36,7 +37,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     }
 
     private val userDao: UserDao = ServiceLocator.getDatabaseInstance().userDao
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -91,7 +91,24 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             }
 
             btnDeleteProfile.setOnClickListener {
+                safeDeleteCurrentUser()
             }
+        }
+    }
+
+    private fun safeDeleteCurrentUser() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            userDao.safeDeleteUser(getUserId(), System.currentTimeMillis())
+            val editor = sharedPreferences.edit()
+            editor.clear()
+            editor.apply()
+
+            // hours of debagging have been spent,
+            // but I still don't understand how navigation in nested graphs works
+            val currentActivity = requireActivity()
+            val intent = Intent(currentActivity, MainActivity::class.java)
+            currentActivity.finish()
+            currentActivity.startActivity(intent)
         }
     }
 
@@ -226,10 +243,13 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                             ).show()
                         }
                     } else {
-                        val message : String
+                        val message: String
                         if (STRONG_PASSWORD_PATTERN.matcher(enteredNewPassword).matches()) {
                             message = getString(R.string.successfully_changed_password)
-                            userDao.updatePassword(getUserId(), PasswordEncryptor.encryptPassword(enteredNewPassword))
+                            userDao.updatePassword(
+                                getUserId(),
+                                PasswordEncryptor.encryptPassword(enteredNewPassword)
+                            )
                         } else if (MEDIUM_PASSWORD_PATTERN.matcher(enteredNewPassword).matches()) {
                             message = getString(R.string.one_of_the_conditions_is_not_met)
                         } else {
@@ -252,4 +272,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             .show()
     }
 
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 }

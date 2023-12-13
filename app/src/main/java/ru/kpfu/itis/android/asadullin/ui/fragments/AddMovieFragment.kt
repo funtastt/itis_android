@@ -29,4 +29,8 @@ class AddMovieFragment : Fragment(R.layout.fragment_add_movie) {
 
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 }

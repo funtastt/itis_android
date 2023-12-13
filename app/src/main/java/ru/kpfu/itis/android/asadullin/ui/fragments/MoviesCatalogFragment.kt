@@ -28,4 +28,9 @@ class MoviesCatalogFragment : Fragment(R.layout.fragment_movies_catalog) {
     private fun initViews() {
 
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 }

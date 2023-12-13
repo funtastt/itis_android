@@ -96,5 +96,10 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     }
 
     private fun getUserId() = sharedPreferences.getInt("userId", -1)
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 }
 

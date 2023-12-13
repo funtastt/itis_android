@@ -178,4 +178,9 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
 
         return isAccessible
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 }
