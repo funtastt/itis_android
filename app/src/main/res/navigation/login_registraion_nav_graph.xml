@@ -20,9 +20,12 @@
 
     <fragment
         android:id="@+id/registerFragment"
-        android:name="ru.kpfu.itis.android.asadullin.ui.fragments.RegisterFragment"
+        android:name="ru.kpfu.itis.android.asadullin.ui.fragments.RegistrationFragment"
         android:label="RegisterFragment"
-        tools:layout="@layout/fragment_register">
+        tools:layout="@layout/fragment_registration">
+        <action
+            android:id="@+id/action_registerFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
 
     <fragment

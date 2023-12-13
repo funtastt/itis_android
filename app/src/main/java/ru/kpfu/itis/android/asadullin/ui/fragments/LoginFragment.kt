@@ -1,5 +1,6 @@
 package ru.kpfu.itis.android.asadullin.ui.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,10 +25,12 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     private var _binding: FragmentLoginBinding? = null
     private val binding: FragmentLoginBinding get() = _binding!!
 
+    private val sharedPreferences by lazy {
+        requireActivity().getSharedPreferences("ApplicationPreferences", Context.MODE_PRIVATE)
+    }
+
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentLoginBinding.inflate(inflater)
         return binding.root
@@ -39,6 +42,10 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
     private fun initViews() {
         with(binding) {
+            if (getUserId() != -1) {
+                findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
+            }
+
             btnLogin.setOnClickListener {
                 val email = etEmail.text.toString()
                 val password = etPassword.text.toString()
@@ -49,23 +56,28 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 }
 
                 lifecycleScope.launch(Dispatchers.IO) {
-                    val users : List<UserEntity>? = ServiceLocator.getDatabaseInstance().userDao
-                        .getUsersByEmail(email)
+                    val users: List<UserEntity>? =
+                        ServiceLocator.getDatabaseInstance().userDao.getUsersByEmail(email)
                     if (users?.isEmpty() == true) {
                         withContext(Dispatchers.Main) {
-                            tilEmail.error = getString(R.string.user_with_this_email_does_not_exists)
+                            tilEmail.error =
+                                getString(R.string.user_with_this_email_does_not_exists)
                         }
                     } else {
-                        val userPassword = users?.get(0)?.password ?: ""
+                        val user = users?.get(0)
+                        val userPassword = user?.password ?: ""
+
                         withContext(Dispatchers.Main) {
                             tilEmail.error = null
 
                             if (PasswordEncryptor.checkPassword(password, userPassword)) {
+                                saveUserId(user?.userId ?: -1)
                                 findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
                             } else {
                                 tilPassword.error = getString(R.string.wrong_password)
                             }
                         }
+
                     }
                 }
             }
@@ -79,5 +91,13 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             }
         }
     }
+
+    private fun saveUserId(userId: Int) {
+        val editor = sharedPreferences.edit()
+        editor.putInt("userId", userId)
+        editor.apply()
+    }
+
+    private fun getUserId() = sharedPreferences.getInt("userId", -1)
 }
 

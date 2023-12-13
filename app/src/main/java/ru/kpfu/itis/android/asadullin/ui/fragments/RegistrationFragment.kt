@@ -4,17 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.kpfu.itis.android.asadullin.R
-import ru.kpfu.itis.android.asadullin.data.db.ApplicationDatabase
 import ru.kpfu.itis.android.asadullin.data.db.dao.UserDao
 import ru.kpfu.itis.android.asadullin.data.db.entity.UserEntity
-import ru.kpfu.itis.android.asadullin.databinding.FragmentRegisterBinding
+import ru.kpfu.itis.android.asadullin.databinding.FragmentRegistrationBinding
 import ru.kpfu.itis.android.asadullin.di.ServiceLocator
 import ru.kpfu.itis.android.asadullin.model.UserModel
 import ru.kpfu.itis.android.asadullin.utils.ApplicationRegex.PHONE_PATTERN
@@ -23,12 +22,11 @@ import ru.kpfu.itis.android.asadullin.utils.ApplicationRegex.EMAIL_PATTERN
 import ru.kpfu.itis.android.asadullin.utils.ApplicationRegex.MEDIUM_PASSWORD_PATTERN
 import ru.kpfu.itis.android.asadullin.utils.ApplicationRegex.STRONG_PASSWORD_PATTERN
 import ru.kpfu.itis.android.asadullin.utils.PasswordEncryptor
-import kotlin.random.Random
 
 
-class RegisterFragment : Fragment(R.layout.fragment_register) {
-    private var _binding: FragmentRegisterBinding? = null
-    private val binding: FragmentRegisterBinding get() = _binding!!
+class RegistrationFragment : Fragment(R.layout.fragment_registration) {
+    private var _binding: FragmentRegistrationBinding? = null
+    private val binding: FragmentRegistrationBinding get() = _binding!!
 
     private val userDao: UserDao = ServiceLocator.getDatabaseInstance().userDao
 
@@ -38,7 +36,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentRegisterBinding.inflate(inflater)
+        _binding = FragmentRegistrationBinding.inflate(inflater)
         return binding.root
     }
 
@@ -90,6 +88,8 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                 lifecycleScope.launch(Dispatchers.IO) {
                     userDao.insertUserModel(UserEntity.fromUserModel(newUser))
                 }
+
+                findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
             }
         }
     }
