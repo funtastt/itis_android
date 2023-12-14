@@ -47,4 +47,6 @@
     <string name="save">Save</string>
     <string name="successfully_added_movie">Successfully added movie to catalog!</string>
     <string name="movie_already_exists">Such movie already exists!</string>
+    <string name="there_is_nothing_to_show">There is nothing to show...</string>
+    <string name="movie_item_release_year">Release year: %d</string>
 </resources>

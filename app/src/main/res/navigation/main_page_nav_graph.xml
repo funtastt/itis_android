@@ -7,8 +7,11 @@
     <fragment
         android:id="@+id/moviesCatalogFragment"
         android:name="ru.kpfu.itis.android.asadullin.ui.fragments.MoviesCatalogFragment"
-        android:label="RegisterFragment"
+        android:label="moviesCatalogFragment"
         tools:layout="@layout/fragment_movies_catalog">
+        <action
+            android:id="@+id/action_moviesCatalogFragment_to_movieItemFragment"
+            app:destination="@id/movieItemFragment" />
     </fragment>
     <fragment
         android:id="@+id/addMovieFragment"
@@ -21,5 +24,12 @@
         android:name="ru.kpfu.itis.android.asadullin.ui.fragments.ProfileFragment"
         android:label="profileFragment"
         tools:layout="@layout/fragment_profile">
+    </fragment>
+
+    <fragment
+        android:id="@+id/movieItemFragment"
+        android:name="ru.kpfu.itis.android.asadullin.ui.fragments.MovieItemFragment"
+        android:label="movieItemFragment"
+        tools:layout="@layout/fragment_movie_item">
     </fragment>
 </navigation>

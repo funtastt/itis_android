@@ -93,7 +93,8 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 etPassword.setText("")
                 tilEmail.error = null
                 tilPassword.error = null
-                findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
+                findNavController()
+                    .navigate(R.id.action_loginFragment_to_registerFragment)
             }
         }
     }

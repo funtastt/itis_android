@@ -13,4 +13,9 @@ interface MovieDao {
 
     @Query("SELECT * FROM movies WHERE movie_title = :movieTitle AND movie_release_year = :movieReleaseYear")
     fun getFilmsByTitleAndYear(movieTitle: String, movieReleaseYear: Int): List<MovieEntity>
+    @Query("SELECT * FROM movies ORDER BY movie_release_year DESC")
+    fun getAllFilms(): List<MovieEntity>
+
+    @Query("SELECT * FROM movies WHERE movie_id = :movieId")
+    fun getFilmById(movieId: Int?): MovieEntity
 }
