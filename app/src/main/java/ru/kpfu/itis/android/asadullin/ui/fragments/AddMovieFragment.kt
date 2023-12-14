@@ -97,16 +97,18 @@ class AddMovieFragment : Fragment(R.layout.fragment_add_movie) {
                     } else {
                         movieDao.insertMovieModel(MovieEntity.fromMovieModel(newMovie))
 
-                        etMovieTitle.setText("")
-                        etReleaseYear.setText("")
-                        etDescription.setText("")
-                        etPoster.setText("")
+                        withContext(Dispatchers.Main) {
+                            etMovieTitle.setText("")
+                            etReleaseYear.setText("")
+                            etDescription.setText("")
+                            etPoster.setText("")
 
-                        Snackbar.make(
-                            requireView(),
-                            getString(R.string.successfully_added_movie),
-                            Snackbar.LENGTH_SHORT
-                        ).show()
+                            Snackbar.make(
+                                requireView(),
+                                getString(R.string.successfully_added_movie),
+                                Snackbar.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 }
             }

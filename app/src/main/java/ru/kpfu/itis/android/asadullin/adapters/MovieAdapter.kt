@@ -10,8 +10,12 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ru.kpfu.itis.android.asadullin.R
 import ru.kpfu.itis.android.asadullin.databinding.ItemMovieCvBinding
+import ru.kpfu.itis.android.asadullin.di.ServiceLocator
 import ru.kpfu.itis.android.asadullin.model.MovieModel
 import ru.kpfu.itis.android.asadullin.ui.holders.MovieItem
 
@@ -25,6 +29,7 @@ class MovieAdapter(
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var moviesCatalog = mutableListOf<MovieModel>()
+    var isItemDeleted = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.item_movie_cv -> MovieItem(
@@ -78,8 +83,21 @@ class MovieAdapter(
     fun removeItem(position: Int) {
         val item = moviesCatalog[position]
         val snackbar = Snackbar.make(root, root.context.getString(R.string.item_was_removed_successfully), Snackbar.LENGTH_LONG)
+        isItemDeleted = true
         snackbar.setAction(root.context.getString(R.string.undo)) {
             restoreItem(item, position)
+        }
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            delay(6000)
+            if (isItemDeleted) {
+                val movieToDelete = item.movieId
+
+                val movieDao = ServiceLocator.getDatabaseInstance().movieDao
+                if (movieToDelete != null) {
+                    movieDao.deleteMovieById(movieToDelete)
+                }
+            }
         }
 
         snackbar.setActionTextColor(Color.YELLOW)
@@ -90,6 +108,7 @@ class MovieAdapter(
     }
 
     private fun restoreItem(item: MovieModel, position: Int) {
+        isItemDeleted = false
         moviesCatalog.add(position, item)
         notifyItemInserted(position)
     }

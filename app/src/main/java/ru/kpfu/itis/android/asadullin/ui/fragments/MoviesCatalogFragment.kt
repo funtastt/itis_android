@@ -88,7 +88,7 @@ class MoviesCatalogFragment : Fragment(R.layout.fragment_movies_catalog) {
     }
 
     private fun enableSwipeToDelete() {
-        val swipeToDeleteCallback = object : SwipeToDeleteCallback(requireContext()) {
+        val swipeToDeleteCallback = object : SwipeToDeleteCallback() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, i: Int) {
                 val position = viewHolder.adapterPosition
 

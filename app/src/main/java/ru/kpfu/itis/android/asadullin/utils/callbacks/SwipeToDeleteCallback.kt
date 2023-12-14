@@ -1,24 +1,15 @@
 package ru.kpfu.itis.android.asadullin.utils.callbacks
 
 import ru.kpfu.itis.android.asadullin.ui.holders.MovieItem
-
-
-import android.R
-import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 
 
-abstract class SwipeToDeleteCallback internal constructor(private var mContext: Context) :
-    ItemTouchHelper.Callback() {
+abstract class SwipeToDeleteCallback : ItemTouchHelper.Callback() {
     private val clearPaint: Paint = Paint()
 
     init {
@@ -76,6 +67,6 @@ abstract class SwipeToDeleteCallback internal constructor(private var mContext: 
     }
 
     override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
-        return 0.5f
+        return 0.3f
     }
 }

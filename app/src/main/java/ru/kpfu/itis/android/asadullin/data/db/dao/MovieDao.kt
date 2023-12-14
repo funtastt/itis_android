@@ -1,6 +1,7 @@
 package ru.kpfu.itis.android.asadullin.data.db.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -18,4 +19,7 @@ interface MovieDao {
 
     @Query("SELECT * FROM movies WHERE movie_id = :movieId")
     fun getFilmById(movieId: Int?): MovieEntity
+
+    @Query("DELETE from movies WHERE movie_id = :movieId")
+    fun deleteMovieById(movieId: Int)
 }
