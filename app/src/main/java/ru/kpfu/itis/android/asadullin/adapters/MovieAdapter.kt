@@ -1,12 +1,15 @@
 package ru.kpfu.itis.android.asadullin.adapters
 
 import android.app.Activity
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
+import com.google.android.material.snackbar.Snackbar
 import ru.kpfu.itis.android.asadullin.R
 import ru.kpfu.itis.android.asadullin.databinding.ItemMovieCvBinding
 import ru.kpfu.itis.android.asadullin.model.MovieModel
@@ -17,7 +20,8 @@ class MovieAdapter(
     private val fragmentManager: FragmentManager,
     private val onMovieClicked: ((MovieModel) -> Unit),
     private val root : View,
-    private val activity : Activity
+    private val activity : Activity,
+    private val lifecycleScope : LifecycleCoroutineScope
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var moviesCatalog = mutableListOf<MovieModel>()
@@ -30,7 +34,8 @@ class MovieAdapter(
                 false
             ),
             glide = glide,
-            onMovieClicked = onMovieClicked
+            onMovieClicked = onMovieClicked,
+            lifecycleScope = lifecycleScope
         )
 
         else -> throw RuntimeException("No such view holder...")
@@ -68,5 +73,24 @@ class MovieAdapter(
         moviesCatalog.clear()
         moviesCatalog.addAll(list)
 //        diffResult.dispatchUpdatesTo(this)
+    }
+
+    fun removeItem(position: Int) {
+        val item = moviesCatalog[position]
+        val snackbar = Snackbar.make(root, root.context.getString(R.string.item_was_removed_successfully), Snackbar.LENGTH_LONG)
+        snackbar.setAction(root.context.getString(R.string.undo)) {
+            restoreItem(item, position)
+        }
+
+        snackbar.setActionTextColor(Color.YELLOW)
+        snackbar.show()
+
+        moviesCatalog.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
+    private fun restoreItem(item: MovieModel, position: Int) {
+        moviesCatalog.add(position, item)
+        notifyItemInserted(position)
     }
 }

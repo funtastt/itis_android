@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 
 @Entity(
-    tableName = "user_movie_ratings",
+    tableName = "user_movie_interactions",
     primaryKeys = ["user_id", "movie_id"],
     foreignKeys = [
         ForeignKey(

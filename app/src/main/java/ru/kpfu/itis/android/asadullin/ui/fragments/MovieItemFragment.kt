@@ -1,11 +1,10 @@
 package ru.kpfu.itis.android.asadullin.ui.fragments
 
-import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
@@ -16,25 +15,24 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.kpfu.itis.android.asadullin.R
 import ru.kpfu.itis.android.asadullin.data.db.dao.MovieDao
-import ru.kpfu.itis.android.asadullin.data.db.dao.UserDao
+import ru.kpfu.itis.android.asadullin.data.db.dao.UserMovieInteractionDao
 import ru.kpfu.itis.android.asadullin.databinding.FragmentMovieItemBinding
 import ru.kpfu.itis.android.asadullin.di.ServiceLocator
 import ru.kpfu.itis.android.asadullin.model.MovieModel
+import kotlin.math.roundToInt
 
 class MovieItemFragment : Fragment(R.layout.fragment_movie_item) {
     private var _binding: FragmentMovieItemBinding? = null
     private val binding: FragmentMovieItemBinding get() = _binding!!
 
-    private val sharedPreferences by lazy {
-        requireActivity().getSharedPreferences("ApplicationPreferences", Context.MODE_PRIVATE)
-    }
-
     private val options: RequestOptions = RequestOptions().fitCenter().diskCacheStrategy(
         DiskCacheStrategy.ALL
     )
 
-    private val userDao: UserDao = ServiceLocator.getDatabaseInstance().userDao
     private val movieDao: MovieDao = ServiceLocator.getDatabaseInstance().movieDao
+    private val interactionDao: UserMovieInteractionDao =
+        ServiceLocator.getDatabaseInstance().interactionDao
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -49,11 +47,12 @@ class MovieItemFragment : Fragment(R.layout.fragment_movie_item) {
     }
 
     private fun initViews() {
-        val movieId = arguments?.getInt("movieId")
+        val movieId = arguments?.getInt("movieId") ?: -1
         val glide = Glide.with(this)
 
         lifecycleScope.launch(Dispatchers.IO) {
             val movieModel: MovieModel = MovieModel.fromMovieEntity(movieDao.getFilmById(movieId))
+            updateRating(movieId)
 
             withContext(Dispatchers.Main) {
                 with(binding) {
@@ -62,13 +61,21 @@ class MovieItemFragment : Fragment(R.layout.fragment_movie_item) {
                     tvMovieItemReleaseYear.text =
                         getString(R.string.movie_item_release_year, movieModel.movieReleaseYear)
 
+
                     glide.load(movieModel.moviePosterUrl)
                         .apply(options)
                         .error(R.drawable.error)
                         .into(ivMovieItemPoster)
 
                     btnRateMovie.setOnClickListener {
-                        RatingDialogFragment().show(
+                        val ratingDialogFragment = RatingDialogFragment(
+                            movieId,
+                            object : RatingDialogFragment.RatingDialogListener {
+                                override fun onRatingConfirmed(movieId: Int) {
+                                    updateRating(movieId)
+                                }
+                            })
+                        ratingDialogFragment.show(
                             childFragmentManager,
                             RatingDialogFragment::class.java.simpleName
                         )
@@ -78,7 +85,26 @@ class MovieItemFragment : Fragment(R.layout.fragment_movie_item) {
         }
     }
 
-    private fun updateRating(movieId: Int?, rating: Float) {
-        Toast.makeText(context, rating.toString(), Toast.LENGTH_SHORT).show()
+    private fun updateRating(movieId: Int) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val ratings: List<Int>? = interactionDao.getRatingByMovieId(movieId)
+            val avgRating = if (ratings.isNullOrEmpty()) 0.0
+            else (ratings.sum() * 10.0 / ratings.size).roundToInt() / 10.0
+
+            withContext(Dispatchers.Main) {
+                with(binding) {
+                    tvCardViewRating.text = avgRating.toString()
+                    if (avgRating == 0.0) {
+                        vItemBackground.setBackgroundColor(Color.rgb(118,120,119))
+                    } else if (avgRating < 2.5) {
+                        vItemBackground.setBackgroundColor(Color.rgb(182,21,11))
+                    } else if (avgRating < 4.2) {
+                        vItemBackground.setBackgroundColor(Color.rgb(251,174,68))
+                    } else {
+                        vItemBackground.setBackgroundColor(Color.rgb(55,182,53))
+                    }
+                }
+            }
+        }
     }
 }

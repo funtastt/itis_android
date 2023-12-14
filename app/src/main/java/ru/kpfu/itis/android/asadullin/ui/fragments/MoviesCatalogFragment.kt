@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -21,10 +22,14 @@ import ru.kpfu.itis.android.asadullin.adapters.MovieAdapter
 import ru.kpfu.itis.android.asadullin.databinding.FragmentMoviesCatalogBinding
 import ru.kpfu.itis.android.asadullin.di.ServiceLocator
 import ru.kpfu.itis.android.asadullin.model.MovieModel
+import ru.kpfu.itis.android.asadullin.utils.callbacks.SwipeToDeleteCallback
 
 class MoviesCatalogFragment : Fragment(R.layout.fragment_movies_catalog) {
     private var _binding: FragmentMoviesCatalogBinding? = null
     private val binding: FragmentMoviesCatalogBinding get() = _binding!!
+
+    private var rv : RecyclerView? = null
+    private var moviesAdapter: MovieAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,17 +54,22 @@ class MoviesCatalogFragment : Fragment(R.layout.fragment_movies_catalog) {
             withContext(Dispatchers.Main) {
 
                 with(binding) {
-                    val rv: RecyclerView = rvMovies
+                    if (movieList.isEmpty()) {
+                        tvNoMoviesToShow.visibility = View.VISIBLE
+                        return@with
+                    }
+                    rv = rvMovies
 
-                    val adapter = MovieAdapter(
+                    moviesAdapter = MovieAdapter(
                         glide = glide,
                         fragmentManager = parentFragmentManager,
                         onMovieClicked = ::onMovieClicked,
                         root = requireView(),
-                        activity = requireActivity()
+                        activity = requireActivity(),
+                        lifecycleScope = lifecycleScope
                     )
 
-                    adapter.setItems(movieList)
+                    moviesAdapter?.setItems(movieList)
 
                     val gridLayoutManager = GridLayoutManager(
                         requireContext(),
@@ -68,13 +78,26 @@ class MoviesCatalogFragment : Fragment(R.layout.fragment_movies_catalog) {
                         false
                     )
 
-                    rv.layoutManager = gridLayoutManager
-                    rv.adapter = adapter
+                    rv?.layoutManager = gridLayoutManager
+                    rv?.adapter = moviesAdapter
+
+                    enableSwipeToDelete()
                 }
             }
         }
+    }
 
+    private fun enableSwipeToDelete() {
+        val swipeToDeleteCallback = object : SwipeToDeleteCallback(requireContext()) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, i: Int) {
+                val position = viewHolder.adapterPosition
 
+                moviesAdapter?.removeItem(position)
+            }
+        }
+
+        val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
+        itemTouchHelper.attachToRecyclerView(rv)
     }
 
     private fun onMovieClicked(movieModel: MovieModel) {
