@@ -40,4 +40,11 @@
     <string name="delete_account_forever">Delete</string>
     <string name="successfully_restored">Successfully restored your account</string>
     <string name="successfully_deleted">Successfully deleted your account</string>
+    <string name="movie_title">Movie Title</string>
+    <string name="release_year">Release Year</string>
+    <string name="movie_description">Movie Description</string>
+    <string name="movie_poster_url">Movie Poster URL</string>
+    <string name="save">Save</string>
+    <string name="successfully_added_movie">Successfully added movie to catalog!</string>
+    <string name="movie_already_exists">Such movie already exists!</string>
 </resources>

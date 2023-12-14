@@ -3,6 +3,7 @@ package ru.kpfu.itis.android.asadullin.data.db
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import ru.kpfu.itis.android.asadullin.data.db.dao.MovieDao
 import ru.kpfu.itis.android.asadullin.data.db.dao.UserDao
 import ru.kpfu.itis.android.asadullin.data.db.entity.MovieEntity
 import ru.kpfu.itis.android.asadullin.data.db.entity.UserEntity
@@ -13,4 +14,5 @@ import ru.kpfu.itis.android.asadullin.data.db.entity.UserEntity
 )
 abstract class ApplicationDatabase : RoomDatabase() {
     abstract val userDao : UserDao
+    abstract val movieDao : MovieDao
 }

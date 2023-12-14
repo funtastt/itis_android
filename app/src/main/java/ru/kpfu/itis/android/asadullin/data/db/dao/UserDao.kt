@@ -11,6 +11,8 @@ import ru.kpfu.itis.android.asadullin.model.UserModel
 
 @Dao
 interface UserDao {
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    fun insertUserModel(userEntity: UserEntity)
     @Query("SELECT * from users WHERE user_id = :userId")
     fun getUserById(userId : Int) : UserEntity
 
@@ -22,9 +24,6 @@ interface UserDao {
 
     @Query("SELECT * from users WHERE name = :username")
     fun getUsersByUsername(username : String) : List<UserEntity>
-
-    @Insert(onConflict = OnConflictStrategy.ABORT)
-    fun insertUserModel(userModel: UserEntity)
 
     @Query("UPDATE users SET name = :newUsername WHERE user_id = :userId")
     fun updateUsername(userId: Int, newUsername: String)
