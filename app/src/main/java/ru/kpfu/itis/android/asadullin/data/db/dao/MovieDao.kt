@@ -22,4 +22,8 @@ interface MovieDao {
 
     @Query("DELETE from movies WHERE movie_id = :movieId")
     fun deleteMovieById(movieId: Int)
+
+    @Query("SELECT * FROM movies WHERE movie_id IN (:favorites) ORDER BY movie_release_year DESC")
+
+    fun getFavorites(favorites: List<Int>): List<MovieEntity>
 }

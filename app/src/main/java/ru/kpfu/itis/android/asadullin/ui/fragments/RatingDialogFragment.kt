@@ -16,7 +16,8 @@ import ru.kpfu.itis.android.asadullin.data.db.entity.UserMovieInteractionEntity
 import ru.kpfu.itis.android.asadullin.databinding.DialogFragmentRatingBinding
 import ru.kpfu.itis.android.asadullin.di.ServiceLocator
 
-class RatingDialogFragment(private var movieId: Int, private val listener: RatingDialogListener) : DialogFragment() {
+class RatingDialogFragment(private var movieId: Int, private val listener: RatingDialogListener) :
+    DialogFragment() {
     private var _binding: DialogFragmentRatingBinding? = null
     private val binding: DialogFragmentRatingBinding get() = _binding!!
 
@@ -45,14 +46,18 @@ class RatingDialogFragment(private var movieId: Int, private val listener: Ratin
 
 
         lifecycleScope.launch(Dispatchers.IO) {
-            val prevRating =
-                interactionDao.getInteractionModelById(movieId = movieId, userId = getUserId()) ?: 0
+            val prevInteraction =
+                interactionDao.getInteractionModelById(movieId = movieId, userId = getUserId())
 
             withContext(Dispatchers.Main) {
                 with(binding) {
-                    ratingBar.rating = prevRating.toFloat()
+                    if (prevInteraction == null) {
+                        ratingBar.rating = 0.0f
+                    } else {
+                        ratingBar.rating = (prevInteraction.rating ?: 0).toFloat()
+                    }
 
-                    ratingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
+                    ratingBar.setOnRatingBarChangeListener { ratingBar, rating, _ ->
                         if (rating < 1.0f) {
                             ratingBar.rating = 1.0f
                         }
@@ -64,13 +69,15 @@ class RatingDialogFragment(private var movieId: Int, private val listener: Ratin
 
                     btnConfirm.setOnClickListener {
                         val newRating = ratingBar.rating.toInt()
-                        lifecycleScope.launch (Dispatchers.IO) {
-                            if (prevRating == 0) {
-                                interactionDao.insertInteractionModel(UserMovieInteractionEntity(
-                                    userId = getUserId(),
-                                    movieId = movieId,
-                                    rating = newRating
-                                ))
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            if (prevInteraction == null) {
+                                interactionDao.insertInteractionModel(
+                                    UserMovieInteractionEntity(
+                                        userId = getUserId(),
+                                        movieId = movieId,
+                                        rating = newRating
+                                    )
+                                )
                             } else {
                                 interactionDao.updateMovieRating(
                                     userId = getUserId(),

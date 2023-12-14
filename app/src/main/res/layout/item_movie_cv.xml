@@ -20,30 +20,31 @@
             app:layout_constraintDimensionRatio="1:2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="200dp" />
 
         <View
             android:id="@+id/vCardViewBackground"
             android:layout_width="42dp"
             android:layout_height="42dp"
-            android:layout_marginTop="8dp"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:background="@color/black"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="@+id/ivCardViewPoster"
+            app:layout_constraintTop_toTopOf="@+id/ivCardViewPoster" />
 
         <TextView
             android:id="@+id/tvCardViewRating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="9.5"
+            android:textColor="@color/white"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:textColor="@color/white"
-            app:layout_constraintEnd_toEndOf="@id/vCardViewBackground"
-            app:layout_constraintTop_toTopOf="@id/vCardViewBackground"
             app:layout_constraintBottom_toBottomOf="@id/vCardViewBackground"
-            app:layout_constraintStart_toStartOf="@id/vCardViewBackground"/>
+            app:layout_constraintEnd_toEndOf="@id/vCardViewBackground"
+            app:layout_constraintStart_toStartOf="@id/vCardViewBackground"
+            app:layout_constraintTop_toTopOf="@id/vCardViewBackground"
+            tools:text="9.5" />
 
         <TextView
             android:id="@+id/tvCardViewTitle"
@@ -52,13 +53,15 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            tools:text="Название фильма"
-            android:textSize="20sp"
+            android:maxLines="1"
             android:textColor="@color/black"
+            android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ivCardViewPoster" />
+            app:layout_constraintTop_toBottomOf="@id/ivCardViewPoster"
+            app:layout_constraintWidth_max="200dp"
+            tools:text="Название фильма" />
 
         <TextView
             android:id="@+id/tvCardViewYear"
@@ -68,11 +71,13 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            tools:text="2022"
+            android:maxLines="1"
             android:textSize="13sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvCardViewTitle" />
+            app:layout_constraintTop_toBottomOf="@id/tvCardViewTitle"
+            app:layout_constraintWidth_max="200dp"
+            tools:text="2022" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

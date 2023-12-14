@@ -3,6 +3,8 @@ package ru.kpfu.itis.android.asadullin.model
 import ru.kpfu.itis.android.asadullin.data.db.entity.MovieEntity
 
 sealed class MovieCatalog {
+    object FavoritesContainer : MovieCatalog()
+
     data class CatalogHeading(
         val heading: String
     ) : MovieCatalog()

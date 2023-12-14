@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 
 
-abstract class SwipeToDeleteCallback : ItemTouchHelper.Callback() {
+abstract class HorizontalSwipeToDeleteCallback : ItemTouchHelper.Callback() {
     private val clearPaint: Paint = Paint()
 
     init {
@@ -21,7 +21,7 @@ abstract class SwipeToDeleteCallback : ItemTouchHelper.Callback() {
         viewHolder: RecyclerView.ViewHolder
     ): Int = if (viewHolder is MovieItem) {
         val position = viewHolder.adapterPosition
-        val swipeFlags = if (position % 2 == 0) ItemTouchHelper.LEFT else ItemTouchHelper.RIGHT
+        val swipeFlags = if (position % 2 == 1) ItemTouchHelper.LEFT else ItemTouchHelper.RIGHT
         makeMovementFlags(0, swipeFlags)
     } else {
         makeMovementFlags(0, 0)

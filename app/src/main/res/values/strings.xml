@@ -51,4 +51,6 @@
     <string name="movie_item_release_year">Release year: %d</string>
     <string name="undo">Undo</string>
     <string name="item_was_removed_successfully">Item was removed successfully!</string>
+    <string name="add_to_favorites">Add to favorites</string>
+    <string name="rate_a_movie">Rate a movie</string>
 </resources>

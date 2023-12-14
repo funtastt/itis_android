@@ -1,5 +1,6 @@
 package ru.kpfu.itis.android.asadullin.ui.fragments
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,6 +17,7 @@ import kotlinx.coroutines.withContext
 import ru.kpfu.itis.android.asadullin.R
 import ru.kpfu.itis.android.asadullin.data.db.dao.MovieDao
 import ru.kpfu.itis.android.asadullin.data.db.dao.UserMovieInteractionDao
+import ru.kpfu.itis.android.asadullin.data.db.entity.UserMovieInteractionEntity
 import ru.kpfu.itis.android.asadullin.databinding.FragmentMovieItemBinding
 import ru.kpfu.itis.android.asadullin.di.ServiceLocator
 import ru.kpfu.itis.android.asadullin.model.MovieCatalog
@@ -29,9 +31,15 @@ class MovieItemFragment : Fragment(R.layout.fragment_movie_item) {
         DiskCacheStrategy.ALL
     )
 
+    private val sharedPreferences by lazy {
+        requireActivity().getSharedPreferences("ApplicationPreferences", Context.MODE_PRIVATE)
+    }
+
     private val movieDao: MovieDao = ServiceLocator.getDatabaseInstance().movieDao
     private val interactionDao: UserMovieInteractionDao =
         ServiceLocator.getDatabaseInstance().interactionDao
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,8 +59,14 @@ class MovieItemFragment : Fragment(R.layout.fragment_movie_item) {
         val glide = Glide.with(this)
 
         lifecycleScope.launch(Dispatchers.IO) {
-            val movieModel: MovieCatalog.MovieModel = MovieCatalog.MovieModel.fromMovieEntity(movieDao.getFilmById(movieId))
+            val movieModel: MovieCatalog.MovieModel =
+                MovieCatalog.MovieModel.fromMovieEntity(movieDao.getFilmById(movieId))
             updateRating(movieId)
+
+            val interaction: UserMovieInteractionEntity? =
+                interactionDao.getInteractionModelById(movieId, getUserId())
+
+            val isFavored = interaction?.isFavoured ?: false
 
             withContext(Dispatchers.Main) {
                 with(binding) {
@@ -80,28 +94,90 @@ class MovieItemFragment : Fragment(R.layout.fragment_movie_item) {
                             RatingDialogFragment::class.java.simpleName
                         )
                     }
+                    if (isFavored) {
+                        btnAddToFavorites.setBackgroundColor(Color.rgb(228, 176, 14))
+                    } else {
+                        btnAddToFavorites.setBackgroundColor(Color.rgb(98, 0, 238))
+                    }
+
+                    btnAddToFavorites.setOnClickListener {
+                        updateIsFavored(movieId)
+                    }
                 }
             }
         }
     }
 
+    private fun updateIsFavored(movieId: Int) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val interactionDao = ServiceLocator.getDatabaseInstance().interactionDao
+            val interaction: UserMovieInteractionEntity? =
+                interactionDao.getInteractionModelById(movieId, getUserId())
+
+            val isFavored : Boolean
+            if (interaction != null) {
+                isFavored = !interaction.isFavoured
+                interactionDao.updateMovieFavored(
+                    getUserId(),
+                    movieId,
+                    isFavored
+                )
+            } else {
+                isFavored = true
+                interactionDao.insertInteractionModel(
+                    UserMovieInteractionEntity(
+                        userId = getUserId(),
+                        movieId = movieId,
+                        null,
+                        true
+                    )
+                )
+            }
+
+            withContext(Dispatchers.Main) {
+                if (isFavored) {
+                    binding.btnAddToFavorites.setBackgroundColor(Color.rgb(228, 176, 14))
+                } else {
+                    binding.btnAddToFavorites.setBackgroundColor(Color.rgb(98, 0, 238))
+                }
+            }
+        }
+    }
+
+    private fun getUserId() = sharedPreferences.getInt("userId", -1)
+
+
     private fun updateRating(movieId: Int) {
         lifecycleScope.launch(Dispatchers.IO) {
-            val ratings: List<Int>? = interactionDao.getRatingByMovieId(movieId)
-            val avgRating = if (ratings.isNullOrEmpty()) 0.0
-            else (ratings.sum() * 10.0 / ratings.size).roundToInt() / 10.0
+            val ratings: List<Int?>? = interactionDao.getRatingByMovieId(movieId)
+            val avgRating: Double
+            if (ratings.isNullOrEmpty()) {
+                avgRating = 0.0
+            } else {
+                var size = 0
+                var sum = 0
+                for (rating in ratings) {
+                    if (rating != null) {
+                        size++
+                        sum += rating
+                    }
+                }
+                avgRating = if (size == 0) 0.0
+                else (sum * 10.0 / size).roundToInt() / 10.0
+            }
+
 
             withContext(Dispatchers.Main) {
                 with(binding) {
                     tvCardViewRating.text = avgRating.toString()
                     if (avgRating == 0.0) {
-                        vItemBackground.setBackgroundColor(Color.rgb(118,120,119))
+                        vItemBackground.setBackgroundColor(Color.rgb(118, 120, 119))
                     } else if (avgRating < 2.5) {
-                        vItemBackground.setBackgroundColor(Color.rgb(182,21,11))
+                        vItemBackground.setBackgroundColor(Color.rgb(182, 21, 11))
                     } else if (avgRating < 4.2) {
-                        vItemBackground.setBackgroundColor(Color.rgb(251,174,68))
+                        vItemBackground.setBackgroundColor(Color.rgb(251, 174, 68))
                     } else {
-                        vItemBackground.setBackgroundColor(Color.rgb(55,182,53))
+                        vItemBackground.setBackgroundColor(Color.rgb(55, 182, 53))
                     }
                 }
             }
