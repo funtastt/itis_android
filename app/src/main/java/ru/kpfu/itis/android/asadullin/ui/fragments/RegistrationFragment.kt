@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -54,25 +55,25 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
             btnRegister.isEnabled =
                 checkButtonAccess(username, email, phoneNumber, password)
 
-            etUsername.setOnFocusChangeListener { _, _ ->
+            etUsername.addTextChangedListener {
                 username = etUsername.text.toString()
                 btnRegister.isEnabled =
                     checkButtonAccess(username, email, phoneNumber, password)
             }
 
-            etPhoneNumber.setOnFocusChangeListener { _, _ ->
+            etPhoneNumber.addTextChangedListener {
                 phoneNumber = etPhoneNumber.text.toString()
                 btnRegister.isEnabled =
                     checkButtonAccess(username, email, phoneNumber, password)
             }
 
-            etEmail.setOnFocusChangeListener { _, _ ->
+            etEmail.addTextChangedListener {
                 email = etEmail.text.toString()
                 btnRegister.isEnabled =
                     checkButtonAccess(username, email, phoneNumber, password)
             }
 
-            etPassword.setOnFocusChangeListener { _, _ ->
+            etPassword.addTextChangedListener {
                 password = etPassword.text.toString()
                 btnRegister.isEnabled =
                     checkButtonAccess(username, email, phoneNumber, password)

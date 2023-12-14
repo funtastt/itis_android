@@ -38,4 +38,6 @@
     <string name="account_deleted">This account has been deleted</string>
     <string name="restore_account">Restore</string>
     <string name="delete_account_forever">Delete</string>
+    <string name="successfully_restored">Successfully restored your account</string>
+    <string name="successfully_deleted">Successfully deleted your account</string>
 </resources>

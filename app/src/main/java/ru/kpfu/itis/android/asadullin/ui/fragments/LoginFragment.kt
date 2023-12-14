@@ -1,5 +1,6 @@
 package ru.kpfu.itis.android.asadullin.ui.fragments
 
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -63,13 +65,20 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                     } else {
                         val user = users[0]
                         val userPassword = user.password
+                        val isDeleted = user.isDeleted
 
                         withContext(Dispatchers.Main) {
                             tilEmail.error = null
 
                             if (PasswordEncryptor.checkPassword(password, userPassword)) {
-                                saveUserId(user.userId)
-                                findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
+                                tilPassword.error = null
+
+                                if (isDeleted) {
+                                    showDeletionDialogFragment(user.userId)
+                                } else {
+                                    saveUserId(user.userId)
+                                    findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
+                                }
                             } else {
                                 tilPassword.error = getString(R.string.wrong_password)
                             }
@@ -87,6 +96,56 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
             }
         }
+    }
+
+    private fun showDeletionDialogFragment(userId: Int) {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle(getString(R.string.account_deleted))
+        builder.setMessage(getString(R.string.account_deleted_message))
+
+        builder.setPositiveButton(getString(R.string.restore_account)) { _, _ ->
+            restoreAccount(userId = userId)
+        }
+
+        builder.setNegativeButton(getString(R.string.delete_account_forever)) { _, _ ->
+            deleteAccountForever(userId = userId)
+        }
+
+        builder.show()
+    }
+
+    private fun deleteAccountForever(userId: Int) {
+        with(binding) {
+            etEmail.setText("")
+            etPassword.setText("")
+        }
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            ServiceLocator.getDatabaseInstance().userDao
+                .deleteUserForever(userId = userId)
+        }
+
+        Snackbar.make(
+            requireView(),
+            getString(R.string.successfully_deleted),
+            Snackbar.LENGTH_SHORT
+        ).show()
+    }
+
+    private fun restoreAccount(userId: Int) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            ServiceLocator.getDatabaseInstance().userDao
+                .restoreUser(userId = userId)
+        }
+
+        saveUserId(userId)
+
+        findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
+        Snackbar.make(
+            requireView(),
+            getString(R.string.successfully_restored),
+            Snackbar.LENGTH_SHORT
+        ).show()
     }
 
     private fun saveUserId(userId: Int) {

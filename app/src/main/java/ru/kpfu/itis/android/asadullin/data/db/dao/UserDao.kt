@@ -40,4 +40,10 @@ interface UserDao {
 
     @Query("UPDATE users SET is_deleted = 1, deleted_at = :currentTime WHERE user_id = :userId")
     fun safeDeleteUser(userId: Int, currentTime : Long)
+
+    @Query("UPDATE users SET is_deleted = 0, deleted_at = null WHERE user_id = :userId")
+    fun restoreUser(userId: Int)
+
+    @Query("DELETE FROM users WHERE user_id = :userId")
+    fun deleteUserForever(userId: Int)
 }
