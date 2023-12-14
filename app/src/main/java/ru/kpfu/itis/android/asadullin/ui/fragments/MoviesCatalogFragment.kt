@@ -21,14 +21,14 @@ import ru.kpfu.itis.android.asadullin.R
 import ru.kpfu.itis.android.asadullin.adapters.MovieAdapter
 import ru.kpfu.itis.android.asadullin.databinding.FragmentMoviesCatalogBinding
 import ru.kpfu.itis.android.asadullin.di.ServiceLocator
-import ru.kpfu.itis.android.asadullin.model.MovieModel
+import ru.kpfu.itis.android.asadullin.model.MovieCatalog
 import ru.kpfu.itis.android.asadullin.utils.callbacks.SwipeToDeleteCallback
 
 class MoviesCatalogFragment : Fragment(R.layout.fragment_movies_catalog) {
     private var _binding: FragmentMoviesCatalogBinding? = null
     private val binding: FragmentMoviesCatalogBinding get() = _binding!!
 
-    private var rv : RecyclerView? = null
+    private var rv: RecyclerView? = null
     private var moviesAdapter: MovieAdapter? = null
 
     override fun onCreateView(
@@ -48,8 +48,11 @@ class MoviesCatalogFragment : Fragment(R.layout.fragment_movies_catalog) {
         val glide = Glide.with(this)
 
         lifecycleScope.launch(Dispatchers.IO) {
-            val movieList = ServiceLocator.getDatabaseInstance().movieDao
-                .getAllFilms().map { entity -> MovieModel.fromMovieEntity(entity) }
+            var movieList = mutableListOf<MovieCatalog>()
+            movieList.add(MovieCatalog.CatalogHeading("Favourites"))
+            movieList.add(MovieCatalog.CatalogHeading("Library"))
+            movieList.addAll(ServiceLocator.getDatabaseInstance().movieDao
+                .getAllFilms().map { entity -> MovieCatalog.MovieModel.fromMovieEntity(entity) })
 
             withContext(Dispatchers.Main) {
 
@@ -78,6 +81,12 @@ class MoviesCatalogFragment : Fragment(R.layout.fragment_movies_catalog) {
                         false
                     )
 
+                    gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                        override fun getSpanSize(position: Int) =
+                            if (movieList[position] is MovieCatalog.MovieModel) 1
+                            else 2
+                    }
+
                     rv?.layoutManager = gridLayoutManager
                     rv?.adapter = moviesAdapter
 
@@ -100,7 +109,7 @@ class MoviesCatalogFragment : Fragment(R.layout.fragment_movies_catalog) {
         itemTouchHelper.attachToRecyclerView(rv)
     }
 
-    private fun onMovieClicked(movieModel: MovieModel) {
+    private fun onMovieClicked(movieModel: MovieCatalog.MovieModel) {
         findNavController().navigate(
             R.id.action_moviesCatalogFragment_to_movieItemFragment,
             bundleOf("movieId" to movieModel.movieId)

@@ -13,18 +13,18 @@ import ru.kpfu.itis.android.asadullin.R
 import ru.kpfu.itis.android.asadullin.data.db.dao.UserMovieInteractionDao
 import ru.kpfu.itis.android.asadullin.databinding.ItemMovieCvBinding
 import ru.kpfu.itis.android.asadullin.di.ServiceLocator
-import ru.kpfu.itis.android.asadullin.model.MovieModel
+import ru.kpfu.itis.android.asadullin.model.MovieCatalog
 import kotlin.math.roundToInt
 
 class MovieItem(
     val binding: ItemMovieCvBinding,
     private val glide: RequestManager,
-    private val onMovieClicked: ((MovieModel) -> Unit),
+    private val onMovieClicked: ((MovieCatalog.MovieModel) -> Unit),
     private val lifecycleScope: LifecycleCoroutineScope
 ) : RecyclerView.ViewHolder(binding.root) {
     private val options: RequestOptions = RequestOptions().fitCenter().diskCacheStrategy(
         DiskCacheStrategy.ALL)
-    private var movieItem: MovieModel? = null
+    private var movieItem: MovieCatalog.MovieModel? = null
 
     init {
         with(binding) {
@@ -34,7 +34,7 @@ class MovieItem(
         }
     }
 
-    fun onBind(movieItem: MovieModel) {
+    fun onBind(movieItem: MovieCatalog.MovieModel) {
         this.movieItem = movieItem
 
         val interactionDao : UserMovieInteractionDao = ServiceLocator.getDatabaseInstance().interactionDao

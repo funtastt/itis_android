@@ -3,7 +3,7 @@ package ru.kpfu.itis.android.asadullin.data.db.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import ru.kpfu.itis.android.asadullin.model.MovieModel
+import ru.kpfu.itis.android.asadullin.model.MovieCatalog
 
 @Entity(tableName = "movies")
 data class MovieEntity(
@@ -14,7 +14,7 @@ data class MovieEntity(
     @ColumnInfo(name = "movie_release_year") val movieReleaseYear : Int
 ) {
     companion object {
-        fun fromMovieModel(movieModel: MovieModel) = MovieEntity(
+        fun fromMovieModel(movieModel: MovieCatalog.MovieModel) = MovieEntity(
             movieTitle = movieModel.movieTitle,
             movieDescription = movieModel.movieDescription,
             moviePosterUrl = movieModel.moviePosterUrl,

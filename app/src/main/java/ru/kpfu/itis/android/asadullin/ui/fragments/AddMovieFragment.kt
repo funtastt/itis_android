@@ -22,7 +22,7 @@ import ru.kpfu.itis.android.asadullin.data.db.dao.MovieDao
 import ru.kpfu.itis.android.asadullin.data.db.entity.MovieEntity
 import ru.kpfu.itis.android.asadullin.databinding.FragmentAddMovieBinding
 import ru.kpfu.itis.android.asadullin.di.ServiceLocator
-import ru.kpfu.itis.android.asadullin.model.MovieModel
+import ru.kpfu.itis.android.asadullin.model.MovieCatalog
 import java.io.FileNotFoundException
 import java.util.Calendar
 
@@ -76,7 +76,7 @@ class AddMovieFragment : Fragment(R.layout.fragment_add_movie) {
             }
 
             btnAddMovie.setOnClickListener {
-                val newMovie = MovieModel(
+                val newMovie = MovieCatalog.MovieModel(
                     movieTitle = etMovieTitle.text.toString(),
                     movieReleaseYear = etReleaseYear.text.toString().toIntOrNull() ?: 0,
                     movieDescription = etDescription.text.toString(),

@@ -18,7 +18,7 @@ import ru.kpfu.itis.android.asadullin.data.db.dao.MovieDao
 import ru.kpfu.itis.android.asadullin.data.db.dao.UserMovieInteractionDao
 import ru.kpfu.itis.android.asadullin.databinding.FragmentMovieItemBinding
 import ru.kpfu.itis.android.asadullin.di.ServiceLocator
-import ru.kpfu.itis.android.asadullin.model.MovieModel
+import ru.kpfu.itis.android.asadullin.model.MovieCatalog
 import kotlin.math.roundToInt
 
 class MovieItemFragment : Fragment(R.layout.fragment_movie_item) {
@@ -51,7 +51,7 @@ class MovieItemFragment : Fragment(R.layout.fragment_movie_item) {
         val glide = Glide.with(this)
 
         lifecycleScope.launch(Dispatchers.IO) {
-            val movieModel: MovieModel = MovieModel.fromMovieEntity(movieDao.getFilmById(movieId))
+            val movieModel: MovieCatalog.MovieModel = MovieCatalog.MovieModel.fromMovieEntity(movieDao.getFilmById(movieId))
             updateRating(movieId)
 
             withContext(Dispatchers.Main) {
