@@ -31,7 +31,8 @@ class MovieAdapter(
     private val lifecycleScope: LifecycleCoroutineScope,
     private val context: Context,
     private val userId: Int,
-    private val onEmptyLibrary: (() -> Unit)
+    private val onEmptyLibrary: (() -> Unit),
+    private val onEmptyFavorites: () -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), OnDeleteClickListener {
 
     private var moviesCatalog = mutableListOf<MovieCatalog>()
@@ -182,6 +183,9 @@ class MovieAdapter(
         lifecycleScope.launch(Dispatchers.IO) {
             val interactionDao = ServiceLocator.getDatabaseInstance().interactionDao
             interactionDao.updateMovieFavored(userId, item.movieId ?: -1, false)
+        }
+        if (moviesCatalog.isEmpty()) {
+            onEmptyFavorites()
         }
 
         snackbar.setActionTextColor(Color.YELLOW)

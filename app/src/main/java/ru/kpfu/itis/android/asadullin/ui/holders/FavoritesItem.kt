@@ -21,7 +21,7 @@ class FavoritesItem(
     private val lifecycleScope: LifecycleCoroutineScope,
     private val glide: RequestManager,
     private val context: Context,
-    private val userId : Int
+    private val userId: Int
 ) : RecyclerView.ViewHolder(binding.root) {
     private var rv: RecyclerView? = null
     private var moviesAdapter: MovieAdapter? = null
@@ -29,7 +29,8 @@ class FavoritesItem(
 
     fun onBind() {
         lifecycleScope.launch(Dispatchers.IO) {
-            val favorites = ServiceLocator.getDatabaseInstance().interactionDao.getFavoritesByUserId(userId)
+            val favorites =
+                ServiceLocator.getDatabaseInstance().interactionDao.getFavoritesByUserId(userId)
 
             movieList.addAll(ServiceLocator.getDatabaseInstance().movieDao.getFavorites(favorites)
                 .map { entity -> MovieCatalog.MovieModel.fromMovieEntity(entity) })
@@ -46,7 +47,8 @@ class FavoritesItem(
                         lifecycleScope = lifecycleScope,
                         context = context,
                         userId = userId,
-                        onEmptyLibrary = ::onEmptyLibrary
+                        onEmptyLibrary = { },
+                        onEmptyFavorites = { }
                     )
 
                     moviesAdapter?.setItems(movieList)

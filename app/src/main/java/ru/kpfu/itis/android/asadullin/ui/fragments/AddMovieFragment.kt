@@ -84,7 +84,10 @@ class AddMovieFragment : Fragment(R.layout.fragment_add_movie) {
                 )
 
                 lifecycleScope.launch(Dispatchers.IO) {
-                    val isAlreadyExists = movieDao.getFilmsByTitleAndYear(newMovie.movieTitle, newMovie.movieReleaseYear).isNotEmpty()
+                    val isAlreadyExists = movieDao.getFilmsByTitleAndYear(
+                        newMovie.movieTitle,
+                        newMovie.movieReleaseYear
+                    ).isNotEmpty()
 
                     if (isAlreadyExists) {
                         withContext(Dispatchers.Main) {
@@ -126,16 +129,9 @@ class AddMovieFragment : Fragment(R.layout.fragment_add_movie) {
 
             val isYearValid =
                 etReleaseYear.text.toString().toIntOrNull() in 1895..Calendar.getInstance()
-                    .get(Calendar.YEAR)
+                    .get(Calendar.YEAR) + 2
 
-            val currentDrawable = ivPoster.drawable
-            var isPosterValid = false
-            if (currentDrawable != null && currentDrawable.constantState != null) {
-                val errorDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.error)
-
-                isPosterValid = currentDrawable.constantState != errorDrawable?.constantState
-            }
-            btnAddMovie.isEnabled = !isAnyFieldEmpty && isYearValid && isPosterValid
+            btnAddMovie.isEnabled = !isAnyFieldEmpty && isYearValid
         }
     }
 

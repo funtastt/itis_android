@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -18,6 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.kpfu.itis.android.asadullin.R
 import ru.kpfu.itis.android.asadullin.adapters.MovieAdapter
+import ru.kpfu.itis.android.asadullin.data.db.entity.UserMovieInteractionEntity
 import ru.kpfu.itis.android.asadullin.databinding.FragmentMoviesCatalogBinding
 import ru.kpfu.itis.android.asadullin.di.ServiceLocator
 import ru.kpfu.itis.android.asadullin.model.MovieCatalog
@@ -52,7 +55,8 @@ class MoviesCatalogFragment : Fragment(R.layout.fragment_movies_catalog) {
 
         lifecycleScope.launch(Dispatchers.IO) {
             var movieList = mutableListOf<MovieCatalog>()
-            var favorites = ServiceLocator.getDatabaseInstance().interactionDao.getFavoritesByUserId(getUserId())
+            var favorites =
+                ServiceLocator.getDatabaseInstance().interactionDao.getFavoritesByUserId(getUserId())
 
             if (favorites.isNotEmpty()) {
                 movieList.add(MovieCatalog.CatalogHeading("Favourites"))
@@ -83,7 +87,13 @@ class MoviesCatalogFragment : Fragment(R.layout.fragment_movies_catalog) {
                         lifecycleScope = lifecycleScope,
                         context = requireContext(),
                         userId = getUserId(),
-                        onEmptyLibrary = ::onEmptyLibrary
+                        onEmptyLibrary = {
+                            binding.tvNoMoviesToShow.visibility = View.VISIBLE
+                        },
+                        onEmptyFavorites = {
+                            movieList.remove(MovieCatalog.CatalogHeading("Favourites"))
+                            moviesAdapter?.setItems(movieList)
+                        }
                     )
 
                     moviesAdapter?.setItems(movieList)
@@ -110,8 +120,69 @@ class MoviesCatalogFragment : Fragment(R.layout.fragment_movies_catalog) {
         }
     }
 
-    private fun onEmptyLibrary() {
-        binding.tvNoMoviesToShow.visibility = View.VISIBLE
+    private fun handleSortSelection(selectedSortType: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val movieDao = ServiceLocator.getDatabaseInstance().movieDao
+            val interactionDao = ServiceLocator.getDatabaseInstance().interactionDao
+
+            val moviesLibrary = movieDao.getAllFilms()
+                .map { entity -> MovieCatalog.MovieModel.fromMovieEntity(entity) }
+            val sortedMovies = mutableListOf<MovieCatalog.MovieModel>()
+            var catalog = mutableListOf<MovieCatalog>()
+
+            when (selectedSortType) {
+                "By release year (descending)" -> {
+                    sortedMovies.addAll(moviesLibrary.sortedByDescending { it.movieReleaseYear })
+                }
+
+                "By release year (ascending)" -> {
+                    sortedMovies.addAll(moviesLibrary.sortedByDescending { it.movieReleaseYear }
+                        .reversed())
+                }
+
+                "Your ratings (descending)" -> {
+                    val userRatings: List<UserMovieInteractionEntity> =
+                        interactionDao.getRatingsByUserId(getUserId()).map {
+                            it.copy(rating = it.rating ?: 0)
+                        }.sortedByDescending { it.rating }
+                    println(userRatings)
+
+                    for (movie in userRatings) {
+                        val position = moviesLibrary.indexOfFirst { it.movieId == movie.movieId }
+                        sortedMovies.add(moviesLibrary[position])
+                    }
+                }
+
+                "Your ratings (ascending)" -> {
+                    val userRatings: List<UserMovieInteractionEntity> =
+                        interactionDao.getRatingsByUserId(getUserId()).map {
+                            it.copy(rating = it.rating ?: 0)
+                        }.sortedByDescending { it.rating }.reversed()
+
+                    for (movie in userRatings) {
+                        val position = moviesLibrary.indexOfFirst { it.movieId == movie.movieId }
+                        sortedMovies.add(moviesLibrary[position])
+                    }
+                }
+            }
+
+            var favorites = interactionDao.getFavoritesByUserId(getUserId())
+
+            withContext(Dispatchers.Main) {
+                if (favorites.isNotEmpty()) {
+                    catalog.add(MovieCatalog.CatalogHeading("Favourites"))
+                    catalog.add(MovieCatalog.FavoritesContainer)
+                }
+
+                if (moviesLibrary.isNotEmpty()) {
+                    catalog.add(MovieCatalog.CatalogHeading("Library"))
+                    catalog.addAll(sortedMovies)
+                }
+
+                moviesAdapter?.setItems(catalog)
+            }
+        }
+
     }
 
     private fun enableSwipeToDelete() {

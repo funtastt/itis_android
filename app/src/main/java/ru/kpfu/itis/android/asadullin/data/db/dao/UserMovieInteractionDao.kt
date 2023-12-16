@@ -25,4 +25,7 @@ interface UserMovieInteractionDao {
 
     @Query("SELECT movie_id from user_movie_interactions WHERE user_id = :userId AND is_favoured = 1")
     fun getFavoritesByUserId(userId: Int): List<Int>
+
+    @Query("SELECT * from user_movie_interactions WHERE user_id = :userId")
+    fun getRatingsByUserId(userId: Int): List<UserMovieInteractionEntity>
 }
