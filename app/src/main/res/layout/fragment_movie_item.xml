@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivMovieItemPoster"
+            android:layout_width="170dp"
+            android:layout_height="340dp"
+            android:layout_marginStart="16dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintDimensionRatio="1:2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvMovieItemTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:textColor="@color/black"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/ivMovieItemPoster"
+            app:layout_constraintTop_toTopOf="@+id/ivMovieItemPoster" />
+
+        <TextView
+            android:id="@+id/tvMovieItemReleaseYear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/ivMovieItemPoster"
+            app:layout_constraintTop_toBottomOf="@id/tvMovieItemTitle" />
+
+        <View
+            android:id="@+id/vItemBackground"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/black"
+            app:layout_constraintStart_toEndOf="@id/ivMovieItemPoster"
+            app:layout_constraintTop_toBottomOf="@id/tvMovieItemReleaseYear" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRateMovie"
+            style="Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:text="@string/rate_a_movie"
+            android:textSize="12dp"
+            app:layout_constraintBottom_toBottomOf="@id/vItemBackground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/vItemBackground"
+            app:layout_constraintTop_toTopOf="@id/vItemBackground" />
+
+        <ImageButton
+            android:id="@+id/btnAddToFavorites"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/ic_favorite"
+            android:background="@color/design_default_color_primary"
+            app:layout_constraintStart_toEndOf="@+id/ivMovieItemPoster"
+            app:layout_constraintTop_toBottomOf="@+id/vItemBackground"
+            app:tint="@color/white" />
+
+        <TextView
+            android:id="@+id/tvCardViewRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/vItemBackground"
+            app:layout_constraintEnd_toEndOf="@id/vItemBackground"
+            app:layout_constraintStart_toStartOf="@id/vItemBackground"
+            app:layout_constraintTop_toTopOf="@id/vItemBackground"
+            tools:text="9.5" />
+
+        <TextView
+            android:id="@+id/tvMovieItemDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/ivMovieItemPoster"
+            app:layout_constraintTop_toBottomOf="@id/btnAddToFavorites" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

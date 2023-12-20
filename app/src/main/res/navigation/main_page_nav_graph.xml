@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_page_nav_graph.xml"
+    app:startDestination="@id/moviesCatalogFragment">
+    <fragment
+        android:id="@+id/moviesCatalogFragment"
+        android:name="ru.kpfu.itis.android.asadullin.ui.fragments.MoviesCatalogFragment"
+        android:label="moviesCatalogFragment"
+        tools:layout="@layout/fragment_movies_catalog">
+        <action
+            android:id="@+id/action_moviesCatalogFragment_to_movieItemFragment"
+            app:destination="@id/movieItemFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addMovieFragment"
+        android:name="ru.kpfu.itis.android.asadullin.ui.fragments.AddMovieFragment"
+        android:label="addMovieFragment"
+        tools:layout="@layout/fragment_add_movie">
+    </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="ru.kpfu.itis.android.asadullin.ui.fragments.ProfileFragment"
+        android:label="profileFragment"
+        tools:layout="@layout/fragment_profile">
+    </fragment>
+
+    <fragment
+        android:id="@+id/movieItemFragment"
+        android:name="ru.kpfu.itis.android.asadullin.ui.fragments.MovieItemFragment"
+        android:label="movieItemFragment"
+        tools:layout="@layout/fragment_movie_item">
+    </fragment>
+</navigation>
