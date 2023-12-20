@@ -1,11 +1,13 @@
 package ru.kpfu.itis.android.asadullin.adapters
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
 import com.google.android.material.snackbar.Snackbar
@@ -14,6 +16,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.kpfu.itis.android.asadullin.R
+import ru.kpfu.itis.android.asadullin.adapters.diffutil.MovieDiffUtil
 import ru.kpfu.itis.android.asadullin.databinding.ItemCatalogHeadingBinding
 import ru.kpfu.itis.android.asadullin.databinding.ItemFavoritesBinding
 import ru.kpfu.itis.android.asadullin.databinding.ItemMovieCvBinding
@@ -106,9 +109,13 @@ class MovieAdapter(
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun setItems(list: List<MovieCatalog>) {
+        val diff = MovieDiffUtil(oldItemsList = moviesCatalog, newItemsList = list)
+        val diffResult = DiffUtil.calculateDiff(diff)
         moviesCatalog.clear()
         moviesCatalog.addAll(list)
+        diffResult.dispatchUpdatesTo(this)
     }
 
     fun removeItem(position: Int) {
