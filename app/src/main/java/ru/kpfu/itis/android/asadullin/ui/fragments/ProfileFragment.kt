@@ -93,6 +93,25 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             btnDeleteProfile.setOnClickListener {
                 safeDeleteCurrentUser()
             }
+
+            btnExit.setOnClickListener {
+                exit()
+            }
+        }
+    }
+
+    private fun exit() {
+        lifecycleScope.launch (Dispatchers.Main) {
+            val editor = sharedPreferences.edit()
+            editor.clear()
+            editor.apply()
+
+            // hours of debagging have been spent,
+            // but I still don't understand how navigation in nested graphs works
+            val currentActivity = requireActivity()
+            val intent = Intent(currentActivity, MainActivity::class.java)
+            currentActivity.finish()
+            currentActivity.startActivity(intent)
         }
     }
 
